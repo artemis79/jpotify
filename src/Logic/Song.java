@@ -1,8 +1,11 @@
+package Logic;
+
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 /**
  * The class song holds information about a song
@@ -15,7 +18,11 @@ import java.io.FileNotFoundException;
 
 public class Song
 {
-    
+    private String songName;
+    private String albumName;
+    private String artistName;
+    private String releaseYear;
+    private byte [] image;
     private final String FILE_PATH ;
     private Player playMP3;
     private int songStatus;
@@ -26,14 +33,15 @@ public class Song
     private final Object playerBlock;
     private FileInputStream fileInputStream;
     private Thread thread;
-    
-    public Song (String filePath) throws FileNotFoundException, JavaLayerException {
+
+    public Song (String filePath) throws IOException, JavaLayerException {
         FILE_PATH = filePath;
         fileInputStream = new FileInputStream(FILE_PATH);
         playMP3 = new Player(fileInputStream);
         songStatus = NOT_STARTED;
         playerBlock = new Object();
-        thread = new Thread(new PlayTillFinished());
+        thread = new Thread(new PlayTillFinished ());
+        getArtwork();
     }
 
     /**
@@ -42,7 +50,7 @@ public class Song
      *
      * @throws InterruptedException
      */
-    
+
     public void play () throws InterruptedException {
         synchronized (playerBlock) {
             if (songStatus == NOT_STARTED || songStatus == PLAYING || songStatus == FINISHED) {
@@ -58,7 +66,6 @@ public class Song
                 thread.wait();
             }
         }
-
     }
 
     /**
@@ -93,6 +100,7 @@ public class Song
         }
     }
 
+
     /**
      * This method checks if the status of a song is PLAYING
      * and changes the status to FINISHED and stops the song from playing
@@ -109,22 +117,46 @@ public class Song
         }
     }
 
+    public int getSongStatus (){
+        return songStatus;
+    }
+
+    public void getArtwork () throws IOException {
+        RandomAccessFile songFile = new RandomAccessFile(FILE_PATH , "r");
+        songFile.seek(songFile.length() - 128);
+        byte [] Tag = new byte[3];
+        songFile.read(Tag , 0 , 3);
+        byte [] songName = new byte[30];
+        songFile.read (songName , 0 , 30);
+        this.songName = new String(songName);
+        byte [] artistName = new byte[30];
+        songFile.read (artistName , 0 , 30);
+        this.artistName = new String(artistName);
+        byte [] albumName = new byte[30];
+        songFile.read (albumName , 0 , 30);
+        this.albumName = new String(albumName);
+        byte [] releaseYear = new byte [5];
+        songFile.read(releaseYear , 0 , 5);
+        this.releaseYear = new String(releaseYear);
+        this.image = new byte[30];
+        songFile.read(this.image, 0 , 30);
+        songFile.close();
+
+    }
+
+
     /**
      * The class PlayTillFinished implements Runnable
      * it plays the song on a thread until it is finished
-     * 
+     *
      */
 
     private class PlayTillFinished implements Runnable {
         @Override
         public void run() {
             try {
-                while (true) {
-                    if (!playMP3.play(1)) {
-                        songStatus = FINISHED;
-                        break;
-                    }
-                }
+                playMP3.play();
+                songStatus = FINISHED;
             }
             catch (JavaLayerException e) {
                 e.printStackTrace();

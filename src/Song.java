@@ -26,8 +26,29 @@ public class Song
     private static final int FINISHED = 3;
     private final Object playerBlock;
     private FileInputStream fileInputStream;
+    private String artist;
+
+    public byte[] getSongArtwork() {
+        return songArtwork;
+    }
+
+    private byte[] songArtwork;
+
+    public String getAlbumName() {
+        return albumName;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setAlbumName(String albumName) {
+        this.albumName = albumName;
+    }
+
     private Thread thread;
     private boolean isFavourite=false;
+    private String albumName;
 
     public Song (String filePath) throws FileNotFoundException, JavaLayerException {
 

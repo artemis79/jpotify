@@ -47,7 +47,7 @@ public class Main {
                         if (num!=0)
                         num--;
 
-                        System.out.println(num);
+                         System.out.println(num);
                         song=allSongs.get(num);
                         song.play();
 

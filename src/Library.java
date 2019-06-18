@@ -76,4 +76,24 @@ public class Library {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+
+    public void makeAlbums(){
+
+        for (Song s: allSongs) {
+
+            Album album=new Album( s.getAlbumName(),s.getArtist(),s.getSongArtwork());
+
+                for (Song song:allSongs) {
+
+                    if(song.getAlbumName().equals(album.getAlbumName())){
+
+                        album.getAlbumSongs().add(song);
+
+                    }
+            }
+
+            allAlbums.add(album);
+        }
+
+    }
 }

@@ -7,11 +7,11 @@ public class Album {
     private ArrayList<Song> albumSongs;
     private byte[] albumArtwork;
 
-    public Album(String albumName , String artist , ArrayList<Song> albumSongs , byte[] albumArtwork ){  ///mire az kole song ha ke esme albumeshoon yekie peida mikone mirize too list ye album misaze
+    public Album(String albumName , String artist ,  byte[] albumArtwork ){  ///mire az kole song ha ke esme albumeshoon yekie peida mikone mirize too list ye album misaze
 
         this.albumName=albumName;
         this.artist=artist;
-        this.albumSongs=albumSongs;
+        albumSongs=new ArrayList<>();
         this.albumArtwork=albumArtwork;
 
     }

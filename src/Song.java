@@ -27,12 +27,14 @@ public class Song
     private final Object playerBlock;
     private FileInputStream fileInputStream;
     private String artist;
+    private byte[] songArtwork;
+    private Thread thread;
+    private boolean isFavourite=false;
+    private String albumName;
 
     public byte[] getSongArtwork() {
         return songArtwork;
     }
-
-    private byte[] songArtwork;
 
     public String getAlbumName() {
         return albumName;
@@ -45,10 +47,6 @@ public class Song
     public void setAlbumName(String albumName) {
         this.albumName = albumName;
     }
-
-    private Thread thread;
-    private boolean isFavourite=false;
-    private String albumName;
 
     public Song (String filePath) throws FileNotFoundException, JavaLayerException {
 

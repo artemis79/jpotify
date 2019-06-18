@@ -1,6 +1,7 @@
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
@@ -15,7 +16,7 @@ import java.io.FileNotFoundException;
 
 public class Song
 {
-    
+
     private final String FILE_PATH ;
     private Player playMP3;
     private int songStatus;
@@ -26,14 +27,17 @@ public class Song
     private final Object playerBlock;
     private FileInputStream fileInputStream;
     private Thread thread;
-    
+    private boolean isFavourite=false;
+
     public Song (String filePath) throws FileNotFoundException, JavaLayerException {
+
         FILE_PATH = filePath;
         fileInputStream = new FileInputStream(FILE_PATH);
         playMP3 = new Player(fileInputStream);
         songStatus = NOT_STARTED;
         playerBlock = new Object();
         thread = new Thread(new PlayTillFinished());
+
     }
 
     /**
@@ -42,7 +46,7 @@ public class Song
      *
      * @throws InterruptedException
      */
-    
+
     public void play () throws InterruptedException {
         synchronized (playerBlock) {
             if (songStatus == NOT_STARTED || songStatus == PLAYING || songStatus == FINISHED) {
@@ -112,7 +116,7 @@ public class Song
     /**
      * The class PlayTillFinished implements Runnable
      * it plays the song on a thread until it is finished
-     * 
+     *
      */
 
     private class PlayTillFinished implements Runnable {
@@ -133,5 +137,11 @@ public class Song
     }
 
 
-}
+    public void addToFavourites(Favourites f){
 
+        isFavourite=true;
+        f.addSongToPlaylist(this);
+
+    }
+
+}

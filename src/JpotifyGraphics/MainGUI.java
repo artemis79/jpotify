@@ -7,6 +7,7 @@ import java.io.IOException;
 
 public class MainGUI {
     public static void main(String[] args) {
+        UsernameFrame usernameFrame = new UsernameFrame();
         try {
             MainFrame mainFrame = new MainFrame();
         } catch (FileNotFoundException e) {

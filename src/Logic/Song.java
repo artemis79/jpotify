@@ -144,6 +144,18 @@ public class Song
 
     }
 
+    public String getAlbumName (){
+        return albumName;
+    }
+
+    public String getArtist(){
+        return artistName;
+    }
+
+    public byte [] getImage (){
+        return image;
+    }
+
 
     /**
      * The class PlayTillFinished implements Runnable
@@ -166,4 +178,5 @@ public class Song
 
 
 }
+
 

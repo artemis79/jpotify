@@ -1,7 +1,7 @@
 package Logic;
 import java.util.ArrayList;
 
-public class Album {
+public class Album implements Playable {
 
     private String albumName;
     private String artist;

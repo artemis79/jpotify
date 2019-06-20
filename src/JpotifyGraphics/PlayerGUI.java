@@ -1,51 +1,87 @@
 package JpotifyGraphics;
 
-import Logic.*;
-import javazoom.jl.decoder.JavaLayerException;
+import Logic.Album;
+import Logic.Playlist;
+import Logic.Song;
 
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerGUI extends JPanel {
 
     private JSlider songSlider;
     private JSlider soundSlider;
+    private ArtworkFrame artworkFrame;
     private Song song;
+    private ControlButtons buttons;
+    private Album album;
+    private Playlist playlist;
+    private int wholeTime;
 
 
-    public PlayerGUI(Song song) throws InterruptedException {
+    public PlayerGUI() throws IOException {
         super();
-        this.song = song;
-        this.song.play();
-        songSlider = new JSlider();
-        soundSlider = new JSlider();
+        songSlider = new JSlider(0, 100 , 0);
+        soundSlider = new JSlider(0, 100, 50);
         this.setLayout(new BorderLayout());
-        ControlButtons buttons = new ControlButtons(song);
+        soundSlider.addChangeListener(new SoundChangeSlider());
+        songSlider.addChangeListener(new SoundChangeSlider());
+        buttons = new ControlButtons();
         this.add(buttons, BorderLayout.NORTH);
         this.add(soundSlider, BorderLayout.EAST);
         this.add(songSlider, BorderLayout.CENTER);
         this.setBackground(Color.BLACK);
+        artworkFrame = new ArtworkFrame(song);
+        this.add (artworkFrame , BorderLayout.WEST);
         this.setVisible(true);
     }
 
+    public void playSong (Song song) throws IOException, InterruptedException {
+        this.song = song;
+        wholeTime = song.getRemaining();
+        buttons.pauseResumeSong(song);
+        song.play();
+        artworkFrame = new ArtworkFrame(song);
+        this.add (artworkFrame , BorderLayout.WEST);
+        this.setVisible(true);
+        new Thread(new SyncSongSlider()).start();
+    }
+
+    private class SyncSongSlider implements Runnable {
+
+        @Override
+        public void run() {
+            while (!song.getPlayMP3().isComplete()){
+                try {
+                    songSlider.getModel().setRangeProperties(wholeTime- song.getRemaining(),wholeTime , 0 , wholeTime , true);
+                    TimeUnit.MILLISECONDS.sleep(750);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     private class SoundChangeSlider implements ChangeListener {
 
         @Override
         public void stateChanged(ChangeEvent e) {
-            JSlider source = (JSlider) e.getSource();
-            if (!source.getValueIsAdjusting()) {
+            int value = soundSlider.getValue();
+            float soundValue = (float) value / 100;
 
-            }
         }
 
+    }
+
+    private class PlayerChangeSlider implements ChangeListener{
+
+        @Override
+        public void stateChanged(ChangeEvent e) {
+
+        }
     }
 }

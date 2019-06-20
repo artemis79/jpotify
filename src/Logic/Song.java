@@ -117,6 +117,10 @@ public class Song
         }
     }
 
+    public void skipSong (long value) throws IOException {
+        fileInputStream.skip(value);
+    }
+
     public int getSongStatus (){
         return songStatus;
     }
@@ -138,8 +142,8 @@ public class Song
         byte [] releaseYear = new byte [5];
         songFile.read(releaseYear , 0 , 5);
         this.releaseYear = new String(releaseYear);
-        this.image = new byte[30];
-        songFile.read(this.image, 0 , 30);
+        this.image = new byte[31];
+        songFile.read(this.image, 0 , 31);
         songFile.close();
 
     }
@@ -174,6 +178,22 @@ public class Song
                 e.printStackTrace();
             }
         }
+    }
+
+    public String getSongName (){
+        return songName;
+    }
+
+    public Player getPlayMP3 (){
+        return playMP3;
+    }
+
+    public String getFilePath (){
+        return FILE_PATH;
+    }
+
+    public int getRemaining () throws IOException {
+        return fileInputStream.available();
     }
 
 

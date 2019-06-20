@@ -14,16 +14,14 @@ public class ControlButtons extends JPanel {
     private JButton previousSong;
     private Song song;
 
-    public ControlButtons (Song song){
+    public ControlButtons (){
         super();
         pauseOrResume = new JButton("pause");
-        pauseOrResume.addActionListener(new PauseORResumeSong());
         pauseOrResume.setBackground(Color.CYAN);
         nextSong = new JButton("  next  ");
         nextSong.setBackground(Color.CYAN);
         previousSong = new JButton("previous");
         previousSong.setBackground(Color.CYAN);
-        this.song = song;
         JPanel btnPanel = new JPanel();
         btnPanel.setLayout(new FlowLayout());
         this.add(previousSong);
@@ -33,8 +31,13 @@ public class ControlButtons extends JPanel {
 
     }
 
+    public void pauseResumeSong (Song song){
+        this.song = song;
+        pauseOrResume.addActionListener(new PauseOrResumeSong());
+    }
 
-    private class PauseORResumeSong implements ActionListener {
+
+    private class PauseOrResumeSong implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {

@@ -18,6 +18,7 @@ public class ControlButtons extends JPanel {
         super();
         pauseOrResume = new JButton("pause");
         pauseOrResume.setBackground(Color.CYAN);
+        pauseOrResume.addActionListener(new PauseOrResumeSong());
         nextSong = new JButton("  next  ");
         nextSong.setBackground(Color.CYAN);
         previousSong = new JButton("previous");
@@ -33,7 +34,6 @@ public class ControlButtons extends JPanel {
 
     public void pauseResumeSong (Song song){
         this.song = song;
-        pauseOrResume.addActionListener(new PauseOrResumeSong());
     }
 
 
@@ -41,20 +41,22 @@ public class ControlButtons extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            try {
-                //if the song is in PLAYING state its status is equal to 2
-                if (song.getSongStatus() == 2){
-                    song.pause();
-                    pauseOrResume.setText("resume");
+            if (song != null) {
+                try {
+                    //if the song is in PLAYING state its status is equal to 2
+                    if (song.getSongStatus() == 2) {
+                        song.pause();
+                        pauseOrResume.setText("resume");
+                    }
+                    //if the song is in PAUSED state its status is equal to 1
+                    else if (song.getSongStatus() == 1) {
+                        song.resume();
+                        pauseOrResume.setText("pause");
+                    }
+                } catch (InterruptedException e1) {
+                    System.out.println("Sorry the song could not be paused");
+                    e1.printStackTrace();
                 }
-                //if the song is in PAUSED state its status is equal to 1
-                else if (song.getSongStatus() == 1){
-                    song.resume();
-                    pauseOrResume.setText("pause");
-                }
-            } catch (InterruptedException e1) {
-                System.out.println("Sorry the song could not be paused");
-                e1.printStackTrace();
             }
         }
     }

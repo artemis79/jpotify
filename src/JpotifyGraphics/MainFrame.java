@@ -4,6 +4,7 @@ import Logic.Library;
 import Logic.Song;
 import javazoom.jl.decoder.JavaLayerException;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
@@ -59,6 +60,8 @@ public class MainFrame extends JFrame {
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (UnsupportedAudioFileException e) {
                         e.printStackTrace();
                     }
                 }

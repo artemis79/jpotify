@@ -2,10 +2,14 @@ package Logic;
 
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.*;
+import java.util.Map;
 
 /**
  * The class song holds information about a song
@@ -30,13 +34,15 @@ public class Song
     private static final int PAUSED = 1;
     private static final int PLAYING = 2;
     private static final int FINISHED = 3;
+    private Time trackDuration;
     private final Object playerBlock;
     private FileInputStream fileInputStream;
     private Thread thread;
 
-    public Song (String filePath) throws IOException, JavaLayerException {
+    public Song (String filePath) throws IOException, JavaLayerException, UnsupportedAudioFileException {
         FILE_PATH = filePath;
         fileInputStream = new FileInputStream(FILE_PATH);
+        trackDuration = new Time (0 , 0);
         playMP3 = new Player(fileInputStream);
         songStatus = NOT_STARTED;
         playerBlock = new Object();
@@ -173,8 +179,7 @@ public class Song
             try {
                 playMP3.play();
                 songStatus = FINISHED;
-            }
-            catch (JavaLayerException e) {
+            } catch (JavaLayerException e) {
                 e.printStackTrace();
             }
         }
@@ -195,6 +200,63 @@ public class Song
     public int getRemaining () throws IOException {
         return fileInputStream.available();
     }
+
+    public void skip (long frames) throws IOException {
+        fileInputStream.skip(frames);
+    }
+
+    public void calTrackDuration() throws UnsupportedAudioFileException, IOException {
+        try{
+
+            File file=new File(FILE_PATH);
+
+            BufferedInputStream bis = new BufferedInputStream(fileInputStream);
+
+            int duration = 0;
+
+            AudioFile audioFile = AudioFileIO.read(file);
+            duration= audioFile.getAudioHeader().getTrackLength();
+            System.out.println(duration);
+
+            trackDuration = new Time (duration / 60 , duration % 60);
+
+        }catch(Exception e){
+
+            System.out.print("ERROR "+ e);
+        }
+
+    }
+
+    public Time getTrackDuration (){
+        return trackDuration;
+    }
+
+    /*private ImageData extractImageFromFile(String srcFile) throws Exception {
+        ImageData imageData = null;
+        File sourceFile = new File(srcFile);
+        MP3File mp3file = new MP3File(sourceFile);
+        FilenameTag fileNameTag = mp3file.getFilenameTag();
+        AbstractID3v2 id3v2 = mp3file.getID3v2Tag();
+        if (id3v2 != null) {
+            AbstractID3v2Frame apic = id3v2.getFrame(PICTURE_TAG);
+            if (apic != null) {
+                AbstractMP3FragmentBody apicBody = apic.getBody();
+                String mimeType = (String) apicBody.getObject(MIME_TAG);
+                String fileExtension = getFileExtensionFromMimeType(mimeType);
+                if (fileExtension == null)
+                    fileExtension = "jpg";
+                if (fileExtension.charAt(0) == '.')
+                    fileExtension = fileExtension.substring(1);
+                Object bytes = apicBody.getObject(PICTURE_DATA_TAG);
+                if (bytes != null) {
+                    imageData = new ImageData();
+                    imageData.bytes = (byte[]) bytes;
+                    imageData.fileExtension = fileExtension;
+                }
+            }
+        }
+            return imageData;
+    }*/
 
 
 }

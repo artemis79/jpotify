@@ -1,7 +1,7 @@
 package Logic;
 import java.util.ArrayList;
 
-public class Playlist implements Playable {
+public class Playlist {
 
     private String playlistName;
     private ArrayList<Song> playlistSongs;

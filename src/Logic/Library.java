@@ -2,6 +2,7 @@ package Logic;
 import Logic.Song;
 import javazoom.jl.decoder.JavaLayerException;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,7 +45,12 @@ public class Library {
 
         for (String s:allSongsPath) {
 
-            Song song=new Song(s);
+            Song song= null;
+            try {
+                song = new Song(s);
+            } catch (UnsupportedAudioFileException e) {
+                e.printStackTrace();
+            }
             allSongs.add(song);
 
         }

@@ -19,6 +19,7 @@ public class LibraryFrame extends JPanel {
     private HomeFrame homeFrame;
     private ArrayList<Album> albums;
     private ArrayList<Song> songs;
+    private CenterFrame centerFrame;
 
 
     public LibraryFrame (){
@@ -33,8 +34,21 @@ public class LibraryFrame extends JPanel {
 
     }
 
+    public JButton getButtonAlbum (){
+        return homeFrame.getButtonAlbum();
+    }
+
+
+
     public Library getLibrary (){
         return library;
+    }
+
+    public CenterFrame getCenterFrame (int type) throws IOException {
+        if (centerFrame == null && library != null){
+            centerFrame = new CenterFrame(library , type);
+        }
+        return centerFrame;
     }
 
     private class HomeFrame extends JPanel {
@@ -72,6 +86,7 @@ public class LibraryFrame extends JPanel {
                     }
                 }
             });
+
             buttonSongs.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -83,6 +98,10 @@ public class LibraryFrame extends JPanel {
             this.add (buttonLibrary);
             this.add (buttonAlbum);
             this.add (buttonSongs);
+        }
+
+        public JButton getButtonAlbum (){
+            return buttonAlbum;
         }
 
     }
@@ -109,4 +128,5 @@ public class LibraryFrame extends JPanel {
             this.add (list , BorderLayout.CENTER);
         }
     }
+
 }

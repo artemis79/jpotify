@@ -1,13 +1,22 @@
 package Logic;
 
+import com.mpatric.mp3agic.ID3v1;
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.Mp3File;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.mp3.MP3File;
+import org.jaudiotagger.tag.datatype.Artwork;
+import org.jaudiotagger.tag.id3.ID3v1Tag;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
+import java.awt.*;
 import java.io.*;
 import java.util.Map;
 
@@ -20,7 +29,7 @@ import java.util.Map;
  * @since 2019-06-06
  */
 
-public class Song
+public class Song implements Serializable
 {
     private String songName;
     private String albumName;
@@ -148,8 +157,11 @@ public class Song
         byte [] releaseYear = new byte [5];
         songFile.read(releaseYear , 0 , 5);
         this.releaseYear = new String(releaseYear);
-        this.image = new byte[31];
-        songFile.read(this.image, 0 , 31);
+        try {
+            extractImageFromFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         songFile.close();
 
     }
@@ -231,32 +243,19 @@ public class Song
         return trackDuration;
     }
 
-    /*private ImageData extractImageFromFile(String srcFile) throws Exception {
-        ImageData imageData = null;
-        File sourceFile = new File(srcFile);
-        MP3File mp3file = new MP3File(sourceFile);
-        FilenameTag fileNameTag = mp3file.getFilenameTag();
-        AbstractID3v2 id3v2 = mp3file.getID3v2Tag();
-        if (id3v2 != null) {
-            AbstractID3v2Frame apic = id3v2.getFrame(PICTURE_TAG);
-            if (apic != null) {
-                AbstractMP3FragmentBody apicBody = apic.getBody();
-                String mimeType = (String) apicBody.getObject(MIME_TAG);
-                String fileExtension = getFileExtensionFromMimeType(mimeType);
-                if (fileExtension == null)
-                    fileExtension = "jpg";
-                if (fileExtension.charAt(0) == '.')
-                    fileExtension = fileExtension.substring(1);
-                Object bytes = apicBody.getObject(PICTURE_DATA_TAG);
-                if (bytes != null) {
-                    imageData = new ImageData();
-                    imageData.bytes = (byte[]) bytes;
-                    imageData.fileExtension = fileExtension;
-                }
-            }
+    private void extractImageFromFile() throws Exception {
+
+        Mp3File mp3file = new Mp3File(FILE_PATH);
+        if (mp3file.hasId3v2Tag()){
+            ID3v2 id3v2Tag = mp3file.getId3v2Tag();
+            image = id3v2Tag.getAlbumImage();
         }
-            return imageData;
-    }*/
+    }
+
+    public byte[]  getSongImage () throws Exception {
+        return image;
+    }
+
 
 
 }

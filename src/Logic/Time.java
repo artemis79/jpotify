@@ -33,6 +33,17 @@ public class Time {
         this.minute = minute;
     }
 
+    public boolean isGreater (Time time){
+        if (minute > time.getMinute())
+            return true;
+        else if (minute < time.getMinute())
+            return false;
+        if (second > time.getSecond())
+            return true;
+        else
+            return false;
+    }
+
     @Override
     public String toString (){
         if (second < 10 )

@@ -5,12 +5,13 @@ import Logic.Playlist;
 import Logic.Song;
 import Logic.Time;
 
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +31,7 @@ public class PlayerGUI extends JPanel {
         super();
         soundSlider = new JSlider(0, 100, 50);
         songSlider = new SongSlider();
+        soundSlider.addChangeListener(new SoundChangeSlider());
         this.setLayout(new BorderLayout());
         buttons = new ControlButtons();
         this.add(buttons, BorderLayout.NORTH);
@@ -51,6 +53,7 @@ public class PlayerGUI extends JPanel {
         private JLabel trackTimeLabel;
         private JLabel trackPassedLabel;
         private Time trackPassed;
+        private Time trackTime;
 
         public SongSlider (){
             super();
@@ -58,6 +61,7 @@ public class PlayerGUI extends JPanel {
             trackTimeLabel = new JLabel(" 0 : 00 ");
             trackPassedLabel = new JLabel(" 0 : 00 ");
             trackPassed = new Time (0 , 0);
+            trackTime = new Time (0 , 0);
             this.setLayout(new BorderLayout());
             this.add (trackTimeLabel , BorderLayout.EAST);
             this.add (trackPassedLabel , BorderLayout.WEST);
@@ -68,6 +72,8 @@ public class PlayerGUI extends JPanel {
         public void playSong (Song song1) throws IOException, InterruptedException, UnsupportedAudioFileException {
             song = song1;
             song1.calTrackDuration();
+            trackTime.setSecond(song1.getTrackDuration().getSecond());
+            trackTime.setMinute(song1.getTrackDuration().getMinute());
             trackPassed.setMinute(0);
             trackPassed.setSecond(0);
             wholeTime = song.getRemaining();
@@ -87,35 +93,34 @@ public class PlayerGUI extends JPanel {
             return slider;
         }
 
-    }
+        private class SyncSongSlider implements Runnable{
 
-    private class SyncSongSlider implements Runnable{
-
-        private boolean run = true;
-        @Override
-        public void run() {
-            while (!song.getPlayMP3().isComplete()){
-                try {
-                    songSlider.getSlider().getModel().setRangeProperties(wholeTime - song.getRemaining(), wholeTime, 0, wholeTime, true);
-                    songSlider.incrementTimePassed();
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
+            @Override
+            public void run() {
+                while (!trackTime.isGreater(trackTime)){
+                    try {
+                        songSlider.getSlider().getModel().setRangeProperties(wholeTime - song.getRemaining(), wholeTime, 0, wholeTime, true);
+                        songSlider.incrementTimePassed();
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
+                song.stop();
             }
+
         }
 
     }
+
 
     private class SoundChangeSlider implements ChangeListener {
 
+
         @Override
         public void stateChanged(ChangeEvent e) {
-            int value = soundSlider.getValue();
-            float soundValue = (float) value / 100;
 
         }
-
     }
 
     private class PlayerChangeSlider implements ChangeListener{

@@ -1,17 +1,18 @@
 package Logic;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Playlist {
+public class Playlist implements Sort , Serializable {
 
     private String playlistName;
     private ArrayList<Song> playlistSongs;
-
+    private SongComparator songComparator;
 
     public Playlist(String playlistName) {
 
         this.playlistName = playlistName;
         playlistSongs=new ArrayList<>();
-
+        songComparator=new SongComparator();
     }
 
 
@@ -40,5 +41,9 @@ public class Playlist {
     }
 
 
+    @Override
+    public void sortSongs() {
 
+        playlistSongs.sort(songComparator);
+    }
 }

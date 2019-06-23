@@ -6,6 +6,7 @@ import javazoom.jl.player.Player;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.Serializable;
 
 /**
  * The class song holds information about a song
@@ -16,7 +17,7 @@ import java.io.RandomAccessFile;
  * @since 2019-06-06
  */
 
-public class Song
+public class Song implements Comparable , Serializable
 {
     private String songName;
     private String albumName;
@@ -33,6 +34,11 @@ public class Song
     private final Object playerBlock;
     private FileInputStream fileInputStream;
     private Thread thread;
+    private int num=100000;
+
+
+
+
 
     public Song (String filePath) throws IOException, JavaLayerException {
         FILE_PATH = filePath;
@@ -118,6 +124,7 @@ public class Song
     }
 
     public int getSongStatus (){
+
         return songStatus;
     }
 
@@ -156,6 +163,20 @@ public class Song
         return image;
     }
 
+    @Override
+    public int compareTo(Object o) {
+
+        if (o instanceof Song){
+
+           Song s=(Song) o;
+
+           return Integer.compare(num, s.getNum());
+
+        }
+
+        return 2;
+    }
+
 
     /**
      * The class PlayTillFinished implements Runnable
@@ -176,7 +197,17 @@ public class Song
         }
     }
 
+    public int getNum() {
+        return num;
+    }
 
+    public void setNum(int num) {
+        this.num = num;
+    }
+
+    public String getSongName() {
+        return songName;
+    }
 }
 
 

@@ -73,7 +73,7 @@ public class Server extends Thread {
 
         try
         {
-            ServerSocket serverSocket=new ServerSocket(8765);
+            ServerSocket serverSocket=new ServerSocket(6500);
             Server t = new Server(serverSocket);
             t.start();
         } catch (IOException e)

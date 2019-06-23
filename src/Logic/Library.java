@@ -8,18 +8,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class Library {
+public class Library implements Serializable , Sort  {
 
     private String libraryName;
     private String userName;
+    //private Person person;
     private ArrayList<Song> allSongs;
     private ArrayList<String> allSongsPath;
     private ArrayList<Album> allAlbums;
     private ArrayList<Playlist> allPlayLists;
-
+    private SongComparator songComparator;
 
     public Library(String libraryName, String userName) {
 
@@ -28,6 +30,7 @@ public class Library {
         allSongs =  new ArrayList<>();
         allAlbums = new ArrayList<>();
         allSongsPath=new ArrayList<>();
+        songComparator=new SongComparator();
     }
 
     public void  importSongsPathToLibraryFromPc(String pathName) throws IOException, JavaLayerException {
@@ -98,4 +101,27 @@ public class Library {
         }
 
     }
+
+    @Override
+    public void sortSongs() {
+
+        allSongs.sort(songComparator);
+
+    }
+
+    public void save() throws IOException {
+
+        FileOutputStream f1=new FileOutputStream("SavedLibrary");
+        ObjectOutputStream out=new ObjectOutputStream(f1);
+        out.writeObject(this);
+    }
+
+    public void read() throws IOException, ClassNotFoundException {
+        ///jaye in momkene taghir kone..//
+
+        FileInputStream f1=new FileInputStream("SavedLibrary");
+        ObjectInputStream in=new ObjectInputStream(f1);
+        in.readObject();
+    }
+
 }

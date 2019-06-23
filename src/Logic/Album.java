@@ -18,11 +18,6 @@ public class Album {
 
     }
 
-    public void playAlbum (){
-        for (Song song : albumSongs){
-
-        }
-    }
 
 
     public String getAlbumName() {
@@ -36,6 +31,7 @@ public class Album {
     public ArrayList<Song> getAlbumSongs() {
         return albumSongs;
     }
+
 
 
     public byte[] getAlbumArtwork() {

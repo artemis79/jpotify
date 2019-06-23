@@ -20,9 +20,16 @@ public class CenterFrame extends JPanel {
 
     public CenterFrame (Library library , int type) throws IOException {
         super();
+        this.setOpaque(true);
+        this.setBackground(Color.darkGray);
+        this.setBorder(BorderFactory.createLineBorder(Color.white));
         this.library = library;
         artworks = new ArrayList<AlbumArtwork>();
-        library.makeAlbums();
+        try {
+            library.makeAlbums();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (type == 0){
             this.setLayout(new GridLayout());
             albums = library.getAllAlbums();

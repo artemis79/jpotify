@@ -23,9 +23,12 @@ public class AlbumArtwork extends JPanel {
 
     public AlbumArtwork (Album album) throws IOException {
         super();
+        this.setOpaque(true);
+        this.setBackground(Color.darkGray);
         this.album = album;
         albumName = new JLabel(album.getAlbumName());
         albumImage = new JLabel();
+        albumName.setForeground(Color.LIGHT_GRAY);
         byte [] img = album.getAlbumArtwork();
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(img);
         BufferedImage bufferedImage = ImageIO.read(byteArrayInputStream);
@@ -36,7 +39,8 @@ public class AlbumArtwork extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 try {
-                    MainFrame.playSongFromAlbum(album);
+
+                    MainFrame.playSongFromAlbum(album , album.getAlbumSongs().get(0));
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 } catch (UnsupportedAudioFileException e1) {

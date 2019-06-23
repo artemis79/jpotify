@@ -25,12 +25,15 @@ public class PlayerGUI extends JPanel {
     private Album album;
     private Playlist playlist;
     private int wholeTime;
+    private static Thread syncSong;
 
 
     public PlayerGUI() throws IOException {
         super();
         soundSlider = new JSlider(0, 100, 50);
         songSlider = new SongSlider();
+        soundSlider.setBackground(Color.darkGray);
+        soundSlider.setForeground(Color.LIGHT_GRAY);
         soundSlider.addChangeListener(new SoundChangeSlider());
         this.setLayout(new BorderLayout());
         buttons = new ControlButtons();
@@ -43,8 +46,16 @@ public class PlayerGUI extends JPanel {
         this.setVisible(true);
     }
 
+    public ControlButtons getButtons (){
+        return buttons;
+    }
+
     public void playSong (Song song) throws IOException, InterruptedException, UnsupportedAudioFileException {
         songSlider.playSong(song);
+    }
+
+    public static Thread getSyncSong (){
+        return syncSong;
     }
 
 
@@ -57,9 +68,15 @@ public class PlayerGUI extends JPanel {
 
         public SongSlider (){
             super();
+            this.setOpaque(true);
+            this.setBackground(Color.darkGray);
             slider = new JSlider(0, 100 , 0);
+            slider.setBackground(Color.darkGray);
+            slider.setForeground(Color.cyan);
             trackTimeLabel = new JLabel(" 0 : 00 ");
+            trackTimeLabel.setForeground(Color.LIGHT_GRAY);
             trackPassedLabel = new JLabel(" 0 : 00 ");
+            trackPassedLabel.setForeground(Color.LIGHT_GRAY);
             trackPassed = new Time (0 , 0);
             trackTime = new Time (0 , 0);
             this.setLayout(new BorderLayout());
@@ -69,7 +86,7 @@ public class PlayerGUI extends JPanel {
             this.setVisible(true);
         }
 
-        public void playSong (Song song1) throws IOException, InterruptedException, UnsupportedAudioFileException {
+        public synchronized void playSong (Song song1) throws IOException, InterruptedException, UnsupportedAudioFileException {
             song = song1;
             song1.calTrackDuration();
             trackTime.setSecond(song1.getTrackDuration().getSecond());
@@ -81,8 +98,10 @@ public class PlayerGUI extends JPanel {
             artworkFrame.setArtwork(song);
             buttons.pauseResumeSong(song);
             song.play();
-            new Thread(new SyncSongSlider()).start();
+            syncSong = new Thread(new SyncSongSlider());
+            syncSong.start();
         }
+
 
         public void incrementTimePassed (){
             trackPassed.increment();
@@ -95,18 +114,24 @@ public class PlayerGUI extends JPanel {
 
         private class SyncSongSlider implements Runnable{
 
+            private boolean exit = false;
             @Override
             public void run() {
-                while (!trackTime.isGreater(trackTime)){
+                while (!trackTime.isGreater(trackTime) && !exit){
                     try {
                         songSlider.getSlider().getModel().setRangeProperties(wholeTime - song.getRemaining(), wholeTime, 0, wholeTime, true);
                         songSlider.incrementTimePassed();
                         TimeUnit.SECONDS.sleep(1);
+
                     } catch (IOException | InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
                 song.stop();
+            }
+
+            public void exit (){
+                exit = true;
             }
 
         }

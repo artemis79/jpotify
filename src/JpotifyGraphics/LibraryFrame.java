@@ -24,6 +24,8 @@ public class LibraryFrame extends JPanel {
 
     public LibraryFrame (){
         super();
+        this.setOpaque(true);
+        this.setBackground(Color.darkGray);
         this.setPreferredSize(new Dimension(150 , 50));
         this.setLayout(new BorderLayout());
         this.playListFrame = new PlayListFrame();
@@ -59,14 +61,21 @@ public class LibraryFrame extends JPanel {
         private final String HOME_LABEL = "Home";
 
         public HomeFrame (){
+            super();
+            this.setOpaque(true);
+            this.setBackground(Color.darkGray);
             this.buttonLibrary = new JButton(" Library ");
             this.buttonAlbum = new JButton("  Albums ");
             this.buttonSongs = new JButton("  Songs  ");
             this.label = new JLabel(HOME_LABEL);
+            label.setForeground(Color.LIGHT_GRAY);
             buttonLibrary.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+                    fileChooser.setOpaque(true);
+                    fileChooser.setBackground(Color.LIGHT_GRAY);
+                    fileChooser.setForeground(Color.LIGHT_GRAY);
                     fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                     int returnValue = fileChooser.showOpenDialog(null);
 
@@ -118,10 +127,15 @@ public class LibraryFrame extends JPanel {
 
         public PlayListFrame (){
             super();
+            this.setOpaque(true);
+            this.setBackground(Color.darkGray);
             this.setPreferredSize(new Dimension(100 , 400));
             labelPlayList = new JLabel(LABEL);
+            labelPlayList.setForeground(Color.LIGHT_GRAY);
             buttonAdd = new JButton(LABEL_ADD);
             list = new JList<Playlist>();
+            list.setBackground(Color.darkGray);
+            list.setForeground(Color.LIGHT_GRAY);
             this.setLayout(new BorderLayout());
             this.add (labelPlayList , BorderLayout.NORTH);
             this.add (buttonAdd , BorderLayout.SOUTH);

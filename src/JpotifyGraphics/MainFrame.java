@@ -7,11 +7,13 @@ import javazoom.jl.decoder.JavaLayerException;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MainFrame extends JFrame {
@@ -24,6 +26,9 @@ public class MainFrame extends JFrame {
 
     public MainFrame () throws IOException, JavaLayerException, InterruptedException {
         super();
+        JPanel emptyFrame = new JPanel();
+        emptyFrame.setOpaque(true);
+        emptyFrame.setBackground(Color.darkGray);
         playerGUI = new PlayerGUI();
         libraryFrame = new LibraryFrame();
         new Thread(new WaitForLibrary()).start();
@@ -39,7 +44,9 @@ public class MainFrame extends JFrame {
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
+                    //mainFrame.remove(emptyFrame);
                     mainFrame.add(centerFrame, BorderLayout.CENTER);
+                    mainFrame.repaint();
                     ArrayList<AlbumArtwork> artworks = centerFrame.getArtworks();
                 }
             }});
@@ -51,15 +58,23 @@ public class MainFrame extends JFrame {
         mainFrame.setLayout(new BorderLayout());
         mainFrame.add (playerGUI, BorderLayout.SOUTH);
         mainFrame.add (libraryFrame , BorderLayout.WEST);
+        //mainFrame.add (emptyFrame , BorderLayout.CENTER);
         mainFrame.setVisible(true);
 
 
     }
 
-    public static void playSongFromAlbum(Album album) throws InterruptedException, UnsupportedAudioFileException, IOException {
-       for (Song song : album.getAlbumSongs()){
-           playerGUI.playSong(song);
-       }
+    public static void playSongFromAlbum(Album album , Song startingSong) throws InterruptedException, UnsupportedAudioFileException, IOException {
+        ArrayList<Song> songs = album.getAlbumSongs();
+        int i;
+        for (i = 0; i < songs.size(); i++){
+            if (songs.get(i).getSongName().equals(startingSong.getSongName())){
+                break;
+            }
+        }
+        playerGUI.getButtons().setAlbum(album);
+        playerGUI.playSong(songs.get(i));
+
     }
 
     private class WaitForLibrary implements Runnable {

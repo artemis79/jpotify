@@ -18,6 +18,8 @@ public class ArtworkFrame extends JPanel {
 
     public ArtworkFrame (Song song){
         super();
+        this.setOpaque(true);
+        this.setBackground(Color.darkGray);
         this.setPreferredSize(new Dimension(250 , 70));
         this.song = song;
         if (song != null) {
@@ -83,6 +85,8 @@ public class ArtworkFrame extends JPanel {
 
         public Labels (){
             super();
+            this.setOpaque(true);
+            this.setBackground(Color.darkGray);
             if (song != null){
                 labelName = new JLabel(song.getSongName());
                 labelArtist = new JLabel(song.getArtist());
@@ -91,6 +95,8 @@ public class ArtworkFrame extends JPanel {
                 labelName = new JLabel("Song Name");
                 labelArtist = new JLabel("Artist Name");
             }
+            labelArtist.setForeground(Color.LIGHT_GRAY);
+            labelName.setForeground(Color.LIGHT_GRAY);
             this.setLayout(new BoxLayout(this , BoxLayout.PAGE_AXIS));
             this.add (labelName);
             this.add (labelArtist);

@@ -46,7 +46,7 @@ public class Song implements Serializable
     private Time trackDuration;
     private final Object playerBlock;
     private FileInputStream fileInputStream;
-    private Thread thread;
+    private SongThread thread;
 
     public Song (String filePath) throws IOException, JavaLayerException, UnsupportedAudioFileException {
         FILE_PATH = filePath;
@@ -55,7 +55,6 @@ public class Song implements Serializable
         playMP3 = new Player(fileInputStream);
         songStatus = NOT_STARTED;
         playerBlock = new Object();
-        thread = new Thread(new PlayTillFinished ());
         getArtwork();
     }
 
@@ -70,6 +69,7 @@ public class Song implements Serializable
         synchronized (playerBlock) {
             if (songStatus == NOT_STARTED || songStatus == PLAYING || songStatus == FINISHED) {
                 try {
+                    thread = new SongThread();
                     thread.start();
                     songStatus = PLAYING;
                 } catch (Exception exc) {
@@ -125,7 +125,7 @@ public class Song implements Serializable
     public void stop (){
         synchronized (playerBlock){
             if (songStatus == PLAYING){
-                thread.stop();
+                thread.exit();
                 songStatus = FINISHED;
                 playerBlock.notifyAll();
             }
@@ -174,10 +174,6 @@ public class Song implements Serializable
         return artistName;
     }
 
-    public byte [] getImage (){
-        return image;
-    }
-
 
     /**
      * The class PlayTillFinished implements Runnable
@@ -185,15 +181,36 @@ public class Song implements Serializable
      *
      */
 
-    private class PlayTillFinished implements Runnable {
+    private class SongThread extends Thread {
+        private boolean exit = false;
+
+        public SongThread (){
+            super();
+        }
+
         @Override
         public void run() {
+            while (!exit) {
+                try {
+                    songStatus = PLAYING;
+                    playMP3.play(10);
+                } catch (JavaLayerException e) {
+                    e.printStackTrace();
+                }
+            }
             try {
-                playMP3.play();
-                songStatus = FINISHED;
+                fileInputStream = new FileInputStream(FILE_PATH);
+                playMP3 = new Player(fileInputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
             } catch (JavaLayerException e) {
                 e.printStackTrace();
             }
+            songStatus = NOT_STARTED;
+        }
+
+        public void exit (){
+            exit = true;
         }
     }
 

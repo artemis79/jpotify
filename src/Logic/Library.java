@@ -58,6 +58,17 @@ public class Library {
 
     }
 
+    private Album hasThisAlbum (Song song) {
+
+        if (allAlbums != null){
+            for (Album album : allAlbums) {
+                if (album.getAlbumName().equals(song.getAlbumName()))
+                    return album;
+            }
+         }
+        return null;
+    }
+
     public ArrayList<String> getAllSongsPath() {
         return allSongsPath;
     }
@@ -86,22 +97,22 @@ public class Library {
         this.userName = userName;
     }
 
-    public void makeAlbums(){
+    public void makeAlbums() throws Exception {
 
         for (Song s: allSongs) {
+            if (hasThisAlbum(s) == null) {
 
-            Album album=new Album( s.getAlbumName(),s.getArtist(),s.getImage());
+                Album album = new Album(s.getAlbumName(), s.getArtist(), s.getSongImage());
 
-                for (Song song:allSongs) {
+                album.getAlbumSongs().add(s);
 
-                    if(song.getAlbumName().equals(album.getAlbumName())){
-
-                        album.getAlbumSongs().add(song);
-
-                    }
+                allAlbums.add(album);
+            }
+            else {
+                Album album = hasThisAlbum(s);
+                album.getAlbumSongs().add(s);
             }
 
-            allAlbums.add(album);
         }
 
     }

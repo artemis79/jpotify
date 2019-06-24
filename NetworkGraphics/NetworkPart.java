@@ -13,35 +13,33 @@ public class NetworkPart extends JPanel {
    ArrayList<Person> otherUsers=new ArrayList<>();
 
 
-  public NetworkPart(/*Client client*/){
+  public NetworkPart(Client client){
 
       super();
-      //thisUser=client;
-      //otherUsers=client.getOtherUsers();
+      thisUser=client;
+      otherUsers=client.getOtherUsers();
       this.setLayout(new GridLayout(20,1));
       this.setSize(new Dimension(400,850));
       this.setOpaque(true);
       this.setBackground(Color.darkGray);
-//      makeUseres();
-  //    this.setVisible(true);
+      makeUseresIcon();
+      this.setVisible(true);
   }
 
-   public void makeUseres(){
+   public void makeUseresIcon() {
 
-       Person p1=new Person("Kiana");
-       Person p2=new Person("Mahshid");
-       Person p3=new Person("Parsa");
-       otherUsers.add(p1);
-       otherUsers.add(p2);
-       otherUsers.add(p3);
 
-       for (Person p:otherUsers) {
+            if(otherUsers.contains(thisUser.getUser()))
+                otherUsers.remove(thisUser.getUser());
 
-           PersonGUI personGUI=new PersonGUI(p);
-           this.add(personGUI);
+
+           for (Person p : otherUsers) {
+
+               PersonGUI personGUI = new PersonGUI(p);
+               this.add(personGUI);
+           }
+
        }
-        this.setVisible(true);
-   }
 
 
 }

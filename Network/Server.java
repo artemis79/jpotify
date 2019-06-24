@@ -1,5 +1,6 @@
 package Network;
 
+import Logic.Person;
 import Logic.SharedPlaylist;
 
 import java.io.IOException;
@@ -7,50 +8,63 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Scanner;
 
-public class Server {
+public class Server extends Thread {
 
     ServerSocket serverSocket;
-    Scanner socketIn;
-    Formatter socketOut;
-    ObjectInputStream in;
-    ObjectOutputStream out;
-    Socket socket;
+    static ArrayList<ObjectOutputStream> outputStreams=new ArrayList<>();
+    ArrayList<ObjectInputStream> inputStreams=new ArrayList<>();
+    ArrayList<Socket> clients=new ArrayList<>();
+    private ObjectOutputStream out;
 
-//field beshan status o shared palylist o user name too server ????////
 
    public Server(ServerSocket serverSocket ) throws IOException {
 
        this.serverSocket=serverSocket;
-       socket=serverSocket.accept();
-       socketIn=new Scanner(socket.getInputStream());
-       socketOut=new Formatter(socket.getOutputStream());
-       in=new ObjectInputStream(socket.getInputStream());
-       out=new ObjectOutputStream(socket.getOutputStream());
 
    }
 
 
 
-    public void getStatus(){
+    @Override
+    public void run(){
 
-       String status=socketIn.next();
-        System.out.println("recieved");
+        while (true) {
 
-    }
+            Socket client = null;
 
-    public void getUserInformation(){
+            try {
 
-       String userName=socketIn.next();
+                client = serverSocket.accept();
+                System.out.println("new client accepted!");
+                clients.add(client);
+                out = new ObjectOutputStream(client.getOutputStream());
 
-    }
+                if (ClientHandler.users!= null) {
 
-    public void getSharedPlaylist() throws IOException, ClassNotFoundException {
+                    for (Person user:ClientHandler.users) {
 
-        SharedPlaylist sharedPlaylist= (SharedPlaylist) in.readObject();
+                        Person p=user;
+                        out.writeObject(p);
+                    }
+                }
 
+                outputStreams.add(out);
+
+                ClientHandler clientHandler = new ClientHandler(client,out);
+                clientHandler.start();
+
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

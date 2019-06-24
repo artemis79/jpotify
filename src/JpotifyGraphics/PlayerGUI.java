@@ -4,20 +4,23 @@ import Logic.Album;
 import Logic.Playlist;
 import Logic.Song;
 import Logic.Time;
+import javazoom.jl.decoder.JavaLayerException;
 
+import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerGUI extends JPanel {
 
-    private JSlider soundSlider;
+    private SoundSlider soundSlider;
     private SongSlider songSlider;
     private ArtworkFrame artworkFrame;
     private Song song;
@@ -30,11 +33,10 @@ public class PlayerGUI extends JPanel {
 
     public PlayerGUI() throws IOException {
         super();
-        soundSlider = new JSlider(0, 100, 50);
+        soundSlider = new SoundSlider();
         songSlider = new SongSlider();
         soundSlider.setBackground(Color.darkGray);
         soundSlider.setForeground(Color.LIGHT_GRAY);
-        soundSlider.addChangeListener(new SoundChangeSlider());
         this.setLayout(new BorderLayout());
         buttons = new ControlButtons();
         this.add(buttons, BorderLayout.NORTH);
@@ -54,8 +56,63 @@ public class PlayerGUI extends JPanel {
         songSlider.playSong(song);
     }
 
+    public void stopSong (){
+        if (song != null) {
+            song.stop();
+        }
+    }
+
     public static Thread getSyncSong (){
         return syncSong;
+    }
+
+    private class SoundSlider extends JPanel{
+
+        private JSlider soundSlider;
+        private JLabel volumeLabel;
+        private final String PARENT = "C:\\Users\\mahsh\\IdeaProjects\\Jpotify\\src\\Images\\";
+        private final String VOLUME_PATH = PARENT + "icons8-speaker-80.png";
+        private final String MUTE_PATH = PARENT + "icons8-no-audio-80.png";
+        private final String LOW_VOLUME_PATH = PARENT + "icons8-low-volume-80.png";
+
+        public SoundSlider (){
+            super();
+            this.setOpaque(true);
+            this.setBackground(Color.darkGray);
+            this.setPreferredSize(new Dimension(500 , 50));
+            volumeLabel = new JLabel();
+            soundSlider = new JSlider(0 ,100 ,50);
+            soundSlider.setBackground(Color.darkGray);
+            soundSlider.setForeground(Color.LIGHT_GRAY);
+            try {
+                setImage();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            this.setLayout(new FlowLayout());
+            this.add (volumeLabel);
+            this.add (soundSlider);
+            this.setVisible(true);
+
+
+        }
+
+        private void setImage () throws IOException {
+            File file = new File (VOLUME_PATH);
+            BufferedImage bufferedImage = ImageIO.read(file);
+            bufferedImage = resize(bufferedImage , 20 , 20);
+            volumeLabel.setIcon(new ImageIcon(bufferedImage));
+
+        }
+
+        private BufferedImage resize(BufferedImage img, int height, int width) {
+            Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = resized.createGraphics();
+            g2d.drawImage(tmp, 0, 0, null);
+            g2d.dispose();
+            return resized;
+        }
     }
 
 
@@ -103,8 +160,11 @@ public class PlayerGUI extends JPanel {
         }
 
 
-        public void incrementTimePassed (){
-            trackPassed.increment();
+        public void incrementTimePassed (int wholeTime , Song song) throws IOException, UnsupportedAudioFileException {
+            int seconds = (int) (song.getTrackDuration().getAllToSeconds() * ((double) song.getRemaining() / wholeTime));
+            seconds = song.getTrackDuration().getAllToSeconds() - seconds;
+            trackPassed.setSecond(seconds % 60);
+            trackPassed.setMinute(seconds / 60);
             trackPassedLabel.setText(trackPassed.toString());
         }
 
@@ -120,10 +180,12 @@ public class PlayerGUI extends JPanel {
                 while (!trackTime.isGreater(trackTime) && !exit){
                     try {
                         songSlider.getSlider().getModel().setRangeProperties(wholeTime - song.getRemaining(), wholeTime, 0, wholeTime, true);
-                        songSlider.incrementTimePassed();
+                        songSlider.incrementTimePassed(wholeTime ,song);
                         TimeUnit.SECONDS.sleep(1);
 
                     } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (UnsupportedAudioFileException e) {
                         e.printStackTrace();
                     }
                 }
@@ -152,12 +214,7 @@ public class PlayerGUI extends JPanel {
 
         @Override
         public void stateChanged(ChangeEvent e) {
-            int value = soundSlider.getValue();
-            try {
-                    song.skip(value);
-            } catch (IOException e1) {
-                    e1.printStackTrace();
-            }
+
         }
     }
 }

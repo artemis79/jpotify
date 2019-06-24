@@ -256,8 +256,13 @@ public class Song implements Serializable
 
     }
 
-    public Time getTrackDuration (){
-        return trackDuration;
+    public Time getTrackDuration () throws IOException, UnsupportedAudioFileException {
+        if (trackDuration.getAllToSeconds() != 0)
+            return trackDuration;
+        else {
+            calTrackDuration();
+            return trackDuration;
+        }
     }
 
     private void extractImageFromFile() throws Exception {
@@ -276,5 +281,4 @@ public class Song implements Serializable
 
 
 }
-
 

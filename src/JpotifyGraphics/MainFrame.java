@@ -25,43 +25,69 @@ public class MainFrame extends JFrame {
     private CenterFrame centerFrame;
 
     public MainFrame () throws IOException, JavaLayerException, InterruptedException {
-        super();
-        JPanel emptyFrame = new JPanel();
-        emptyFrame.setOpaque(true);
-        emptyFrame.setBackground(Color.darkGray);
+        super(LABEL);
+        centerFrame = new CenterFrame(null , -1);
         playerGUI = new PlayerGUI();
         libraryFrame = new LibraryFrame();
         new Thread(new WaitForLibrary()).start();
-        JFrame mainFrame = new JFrame(LABEL);
+
 
         libraryFrame.getButtonAlbum().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (library != null) {
                     try {
-                        centerFrame = libraryFrame.getCenterFrame(0);
+                        remove(getCenterFrame());
+                        setCenterFrame( libraryFrame.getCenterFrame(0));
+                        add(getCenterFrame(), BorderLayout.CENTER);
+                        invalidate();
+                        validate();
+                        repaint();
+                        ArrayList<AlbumArtwork> artworks = centerFrame.getArtworks();
 
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
-                    //mainFrame.remove(emptyFrame);
-                    mainFrame.add(centerFrame, BorderLayout.CENTER);
-                    mainFrame.repaint();
-                    ArrayList<AlbumArtwork> artworks = centerFrame.getArtworks();
                 }
             }});
 
+        libraryFrame.getButtonSongs().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (library != null){
+                    try {
+                        remove(getCenterFrame());
+                        setCenterFrame( libraryFrame.getCenterFrame(1));
+                        add(getCenterFrame(), BorderLayout.CENTER);
+                        invalidate();
+                        validate();
+                        repaint();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        });
 
-        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        mainFrame.setBackground(Color.BLACK);
-        mainFrame.setLayout(new BorderLayout());
-        mainFrame.add (playerGUI, BorderLayout.SOUTH);
-        mainFrame.add (libraryFrame , BorderLayout.WEST);
-        //mainFrame.add (emptyFrame , BorderLayout.CENTER);
-        mainFrame.setVisible(true);
+
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.setBackground(Color.BLACK);
+        this.setLayout(new BorderLayout());
+        this.add (playerGUI, BorderLayout.SOUTH);
+        this.add (libraryFrame , BorderLayout.WEST);
+        this.add (centerFrame , BorderLayout.CENTER);
+        this.setVisible(true);
 
 
+    }
+
+    public void setCenterFrame (CenterFrame centerFrame){
+        this.centerFrame = centerFrame;
+    }
+
+    public CenterFrame getCenterFrame (){
+        return centerFrame;
     }
 
     public static void playSongFromAlbum(Album album , Song startingSong) throws InterruptedException, UnsupportedAudioFileException, IOException {
@@ -75,6 +101,24 @@ public class MainFrame extends JFrame {
         playerGUI.getButtons().setAlbum(album);
         playerGUI.playSong(songs.get(i));
 
+    }
+
+    public static void playSongFromLibrary (Library library , Song startingSong) throws InterruptedException, UnsupportedAudioFileException, IOException {
+        ArrayList<Song> songs = library.getAllSongs();
+        int i;
+        for (i = 0; i < songs.size(); i++){
+            if (songs.get(i).getSongName().equals(startingSong.getSongName())){
+                break;
+            }
+        }
+        playerGUI.getButtons().setLibrary(library);
+        playerGUI.playSong(songs.get(i));
+
+
+    }
+
+    public static void stopSong (){
+        playerGUI.stopSong();
     }
 
     private class WaitForLibrary implements Runnable {

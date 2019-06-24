@@ -39,7 +39,7 @@ public class AlbumArtwork extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 try {
-
+                    MainFrame.stopSong();
                     MainFrame.playSongFromAlbum(album , album.getAlbumSongs().get(0));
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();

@@ -1,6 +1,7 @@
 package JpotifyGraphics;
 
 import Logic.Album;
+import Logic.Library;
 import Logic.Playlist;
 import Logic.Song;
 import javazoom.jl.player.Player;
@@ -29,9 +30,11 @@ public class ControlButtons extends JPanel {
     private Song song;
     private Album album;
     private Playlist playlist;
+    private Library library;
     private int type;
     private final int PLAYING_ALBUM = 0;
     private final int PLAYING_PLAYLIST = 1;
+    private final int PLAYING_LIBRARY = 2;
     private final String PARENT_PATH = "C:\\Users\\mahsh\\IdeaProjects\\Jpotify\\src\\Images\\";
     private final String PAUSE_PATH =  PARENT_PATH + "icons8-pause-button-80.png";
     private final String RESUME_PATH = PARENT_PATH + "icons8-circled-play-80.png";
@@ -98,29 +101,47 @@ public class ControlButtons extends JPanel {
     }
 
     public void nextSong (Song song) throws InterruptedException, UnsupportedAudioFileException, IOException {
-        ArrayList<Song> songs = album.getAlbumSongs();
-        Iterator<Song> it = songs.iterator();
-        while (it.hasNext()){
-            Song findingSong = it.next();
-            if (findingSong.getSongName().equals(song.getSongName()) && it.hasNext()){
-                song.stop();
-                //PlayerGUI.getSyncSong().stop();
-                findingSong = it.next();
-                MainFrame.playSongFromAlbum(album , findingSong);
-                break;
+        if (type == PLAYING_ALBUM) {
+            ArrayList<Song> songs = album.getAlbumSongs();
+            Iterator<Song> it = songs.iterator();
+            while (it.hasNext()) {
+                Song findingSong = it.next();
+                if (findingSong.getSongName().equals(song.getSongName()) && it.hasNext()) {
+                    song.stop();
+                    //PlayerGUI.getSyncSong().stop();
+                    findingSong = it.next();
+                    MainFrame.playSongFromAlbum(album, findingSong);
+                    break;
+                }
             }
         }
+        else if (type == PLAYING_LIBRARY){
+            ArrayList<Song> songs = album.getAlbumSongs();
+            Iterator<Song> it = songs.iterator();
+            while (it.hasNext()) {
+                Song findingSong = it.next();
+                if (findingSong.getSongName().equals(song.getSongName()) && it.hasNext()) {
+                    song.stop();
+                    findingSong = it.next();
+                    MainFrame.playSongFromLibrary(library , findingSong);
+                    break;
+                }
+            }
+        }
+
     }
 
     public void previousSong (Song song) throws InterruptedException, UnsupportedAudioFileException, IOException {
-        ArrayList<Song> songs = album.getAlbumSongs();
-        if (!song.getSongName().equals(songs.get(0).getSongName())){
-            int i;
-            for (i = 0; i  < songs.size() - 1; i++){
-                if (songs.get(i + 1).getSongName().equals(song.getSongName())){
-                    song.stop();
-                    //PlayerGUI.getSyncSong().stop();
-                    MainFrame.playSongFromAlbum(album , songs.get(i));
+        if (type == PLAYING_ALBUM) {
+            ArrayList<Song> songs = album.getAlbumSongs();
+            if (!song.getSongName().equals(songs.get(0).getSongName())) {
+                int i;
+                for (i = 0; i < songs.size() - 1; i++) {
+                    if (songs.get(i + 1).getSongName().equals(song.getSongName())) {
+                        song.stop();
+                        //PlayerGUI.getSyncSong().stop();
+                        MainFrame.playSongFromAlbum(album, songs.get(i));
+                    }
                 }
             }
         }
@@ -129,6 +150,11 @@ public class ControlButtons extends JPanel {
     public void setAlbum (Album album){
         this.album = album;
         type = PLAYING_ALBUM;
+    }
+
+    public void setLibrary (Library library){
+        this.library = library;
+        type = PLAYING_LIBRARY;
     }
 
 

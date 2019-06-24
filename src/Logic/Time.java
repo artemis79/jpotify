@@ -44,6 +44,10 @@ public class Time {
             return false;
     }
 
+    public int getAllToSeconds (){
+        return second + 60 * minute;
+    }
+
     @Override
     public String toString (){
         if (second < 10 )

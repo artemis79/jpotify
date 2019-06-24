@@ -40,6 +40,10 @@ public class LibraryFrame extends JPanel {
         return homeFrame.getButtonAlbum();
     }
 
+    public JButton getButtonSongs (){
+        return homeFrame.getButtonSongs ();
+    }
+
 
 
     public Library getLibrary (){
@@ -96,12 +100,6 @@ public class LibraryFrame extends JPanel {
                 }
             });
 
-            buttonSongs.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-
-                }
-            });
             this.setLayout(new GridLayout(4 , 1));
             this.add (label);
             this.add (buttonLibrary);
@@ -112,6 +110,8 @@ public class LibraryFrame extends JPanel {
         public JButton getButtonAlbum (){
             return buttonAlbum;
         }
+
+        public JButton getButtonSongs () { return buttonSongs;}
 
     }
 

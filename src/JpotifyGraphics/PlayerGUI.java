@@ -130,6 +130,7 @@ public class PlayerGUI extends JPanel {
             slider = new JSlider(0, 100 , 0);
             slider.setBackground(Color.darkGray);
             slider.setForeground(Color.cyan);
+            slider.addChangeListener(new PlayerChangeSlider());
             trackTimeLabel = new JLabel(" 0 : 00 ");
             trackTimeLabel.setForeground(Color.LIGHT_GRAY);
             trackPassedLabel = new JLabel(" 0 : 00 ");
@@ -151,6 +152,7 @@ public class PlayerGUI extends JPanel {
             trackPassed.setMinute(0);
             trackPassed.setSecond(0);
             wholeTime = song.getRemaining();
+            slider.setMaximum(wholeTime);
             trackTimeLabel.setText(song1.getTrackDuration().toString());
             artworkFrame.setArtwork(song);
             buttons.pauseResumeSong(song);
@@ -214,6 +216,16 @@ public class PlayerGUI extends JPanel {
 
         @Override
         public void stateChanged(ChangeEvent e) {
+            JSlider source = (JSlider) e.getSource();
+            if (!source.getValueIsAdjusting() && song != null)
+            {
+                int value = source.getValue();
+                try {
+                    song.skip(value);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
 
         }
     }

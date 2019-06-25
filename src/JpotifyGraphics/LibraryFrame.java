@@ -8,6 +8,7 @@ import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,11 +52,10 @@ public class LibraryFrame extends JPanel {
     }
 
     public CenterFrame getCenterFrame (int type) throws IOException {
-        if (centerFrame == null && library != null){
-            centerFrame = new CenterFrame(library , type);
-        }
+        centerFrame = new CenterFrame(library , type);
         return centerFrame;
     }
+
 
     private class HomeFrame extends JPanel {
         private JButton buttonLibrary;
@@ -72,6 +72,7 @@ public class LibraryFrame extends JPanel {
             this.buttonAlbum = new JButton("  Albums ");
             this.buttonSongs = new JButton("  Songs  ");
             this.label = new JLabel(HOME_LABEL);
+            label.setFont(new Font(label.getName(), Font.PLAIN, 20));
             label.setForeground(Color.LIGHT_GRAY);
             buttonLibrary.addActionListener(new ActionListener() {
                 @Override
@@ -122,24 +123,66 @@ public class LibraryFrame extends JPanel {
         private final String LABEL = "PlayLists";
         private JButton buttonAdd;
         private final String LABEL_ADD = "Add PlayList";
-        private JList<Playlist> list;
+        private DefaultListModel<String> playlistNames;
+        private JList<String> list;
 
 
         public PlayListFrame (){
             super();
             this.setOpaque(true);
             this.setBackground(Color.darkGray);
-            this.setPreferredSize(new Dimension(100 , 400));
+            JScrollPane scrollPane = new JScrollPane();
+            playlists = new ArrayList<Playlist>();
+            playlistNames = new DefaultListModel<String>();
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            Container container = new Container();
+            this.setLayout(new BorderLayout());
+            this.setOpaque(true);
+            container.setBackground(Color.darkGray);
+            container.setPreferredSize(new Dimension(130 , 550));
             labelPlayList = new JLabel(LABEL);
             labelPlayList.setForeground(Color.LIGHT_GRAY);
+            labelPlayList.setBackground(Color.darkGray);
+            labelPlayList.setFont(new Font(labelPlayList.getName(), Font.PLAIN, 25));
             buttonAdd = new JButton(LABEL_ADD);
-            list = new JList<Playlist>();
+            list = new JList<String>(playlistNames);
             list.setBackground(Color.darkGray);
             list.setForeground(Color.LIGHT_GRAY);
+            buttonAdd.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFrame frame = new JFrame();
+                    JTextField textField = new JTextField();
+                    JButton button = new JButton("Add");
+                    button.setForeground(Color.LIGHT_GRAY);
+                    button.setBackground(Color.darkGray);
+                    button.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            String playListName = textField.getText();
+                            Playlist playlist = new Playlist(playListName);
+                            playlists.add (playlist);
+                            playlistNames.addElement(playListName);
+                            scrollPane.setViewportView(list);
+                            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                        }
+                    });
+                    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    frame.setPreferredSize(new Dimension(150 , 150));
+                    frame.setLayout(new BorderLayout());
+                    frame.add (button , BorderLayout.LINE_END);
+                    frame.add (textField , BorderLayout.CENTER);
+                    frame.setVisible(true);
+                }
+            });
             this.setLayout(new BorderLayout());
             this.add (labelPlayList , BorderLayout.NORTH);
             this.add (buttonAdd , BorderLayout.SOUTH);
-            this.add (list , BorderLayout.CENTER);
+            container.add (list , BorderLayout.CENTER);
+            scrollPane.add (container);
+            scrollPane.getViewport().setBackground(Color.darkGray);
+            this.add (scrollPane, BorderLayout.CENTER);
+            scrollPane.setViewportView(container);
         }
     }
 

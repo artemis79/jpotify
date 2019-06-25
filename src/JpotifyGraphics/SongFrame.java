@@ -23,15 +23,19 @@ public class SongFrame extends JPanel {
     private JLabel artist;
     private JButton playSong;
     private JLabel trackTime;
+    private JButton likeSong;
     private final String PARENT_PATH = "C:\\Users\\mahsh\\IdeaProjects\\Jpotify\\src\\Images\\";
     private final String PLAY_PATH = PARENT_PATH + "icons8-circled-play-80.png";
+    private final String EMPTY_LIKE = PARENT_PATH + "icons8-love-80.png";
+    private final String FULL_LIKE = PARENT_PATH + "icons8-love-80 (1).png";
+    private boolean liked = false;
 
     public SongFrame (Song song , Library library){
         super();
         this.setOpaque(true);
         this.setBackground(Color.darkGray);
         this.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        this.setLayout(new GridLayout(1 , 5));
+        this.setLayout(new GridLayout(1 , 6));
         this.song = song;
         this.library = library;
         songName = new JLabel("     " + song.getSongName());
@@ -51,6 +55,8 @@ public class SongFrame extends JPanel {
         trackTime.setForeground(Color.LIGHT_GRAY);
         playSong = new JButton();
         playSong.setPreferredSize(new Dimension(30 , 20));
+        likeSong = new JButton();
+        likeSong.setPreferredSize(new Dimension(30 , 20));
         try {
             setButtonImage();
         } catch (IOException e) {
@@ -71,7 +77,16 @@ public class SongFrame extends JPanel {
                 }
             }
         });
+        likeSong.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!liked){
+
+                }
+            }
+        });
         this.add (playSong);
+        this.add (likeSong);
         this.add (songName);
         this.add (songAlbum);
         this.add (artist);
@@ -82,8 +97,12 @@ public class SongFrame extends JPanel {
     private void setButtonImage () throws IOException {
         File file = new File (PLAY_PATH);
         BufferedImage bufferedImage = ImageIO.read(file);
-        bufferedImage = resize(bufferedImage , 15 , 15);
+        bufferedImage = resize(bufferedImage , 20 , 20);
         playSong.setIcon(new ImageIcon(bufferedImage));
+        file = new File (EMPTY_LIKE);
+        bufferedImage = ImageIO.read(file);
+        bufferedImage = resize(bufferedImage , 20 , 20);
+        likeSong.setIcon(new ImageIcon(bufferedImage));
     }
 
     private BufferedImage resize(BufferedImage img, int height, int width) {

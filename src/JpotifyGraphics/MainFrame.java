@@ -39,10 +39,6 @@ public class MainFrame extends JFrame {
                     try {
                         remove(getCenterFrame());
                         setCenterFrame( libraryFrame.getCenterFrame(0));
-                        add(getCenterFrame(), BorderLayout.CENTER);
-                        invalidate();
-                        validate();
-                        repaint();
                         ArrayList<AlbumArtwork> artworks = centerFrame.getArtworks();
 
                     } catch (IOException e1) {
@@ -58,10 +54,7 @@ public class MainFrame extends JFrame {
                     try {
                         remove(getCenterFrame());
                         setCenterFrame( libraryFrame.getCenterFrame(1));
-                        add(getCenterFrame(), BorderLayout.CENTER);
-                        invalidate();
-                        validate();
-                        repaint();
+
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -84,6 +77,9 @@ public class MainFrame extends JFrame {
 
     public void setCenterFrame (CenterFrame centerFrame){
         this.centerFrame = centerFrame;
+        add (centerFrame , BorderLayout.CENTER);
+        revalidate();
+        repaint();
     }
 
     public CenterFrame getCenterFrame (){

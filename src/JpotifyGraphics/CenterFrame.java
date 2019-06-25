@@ -23,10 +23,12 @@ public class CenterFrame extends JPanel {
     private ArrayList<AlbumArtwork> artworks;
     private PlayerGUI playerGUI;
     private final String ICON_PATH = "C:\\Users\\mahsh\\IdeaProjects\\Jpotify\\src\\Images\\icons8-spotify-filled-100.png";
+    private int type ;
 
 
     public CenterFrame (Library library , int type) throws IOException {
         super();
+        this.type = type;
         this.setOpaque(true);
         this.setBackground(Color.darkGray);
         this.setBorder(BorderFactory.createLineBorder(Color.white));
@@ -47,6 +49,9 @@ public class CenterFrame extends JPanel {
         else if (type == SHOW_ALBUMS){
             this.library = library;
             artworks = new ArrayList<AlbumArtwork>();
+            JScrollPane scrollPane = new JScrollPane();
+            Container container = new Container();
+
             try {
                 library.makeAlbums();
             } catch (Exception e) {
@@ -66,17 +71,23 @@ public class CenterFrame extends JPanel {
             JScrollPane scrollPane = new JScrollPane();
             Container container = new Container();
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            this.add (scrollPane);
+
+            //this.add (scrollPane);
             this.setLayout(new BoxLayout(this , BoxLayout.PAGE_AXIS));
             for (Song song : songs){
                 SongFrame songFrame = new SongFrame(song , library);
                 container.add(songFrame);
             }
             container.setLayout(new BoxLayout(container , BoxLayout.PAGE_AXIS));
-            this.add(container);
+            scrollPane.setViewportView(container);
+            this.add (scrollPane);
         }
         this.setVisible(true);
 
+    }
+
+    public int getType (){
+        return type;
     }
 
     public ArrayList<AlbumArtwork> getArtworks (){

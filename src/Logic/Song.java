@@ -231,6 +231,12 @@ public class Song implements Serializable
     }
 
     public void skip (long frames) throws IOException {
+        fileInputStream = new FileInputStream(FILE_PATH);
+        try {
+            playMP3 = new Player(fileInputStream);
+        } catch (JavaLayerException e) {
+            e.printStackTrace();
+        }
         fileInputStream.skip(frames);
     }
 

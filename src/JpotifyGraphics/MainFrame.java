@@ -2,12 +2,16 @@ package JpotifyGraphics;
 
 import Logic.Album;
 import Logic.Library;
+import Logic.Playlist;
 import Logic.Song;
 import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,13 +24,14 @@ public class MainFrame extends JFrame {
 
     private final static String LABEL = "Jpotify";
     private Library library;
+    private ArrayList<Playlist> playlists;
     private LibraryFrame libraryFrame;
     private static PlayerGUI playerGUI;
     private CenterFrame centerFrame;
 
     public MainFrame () throws IOException, JavaLayerException, InterruptedException {
         super(LABEL);
-        centerFrame = new CenterFrame(null , -1);
+        centerFrame = new CenterFrame((Library) null, -1);
         playerGUI = new PlayerGUI();
         libraryFrame = new LibraryFrame();
         new Thread(new WaitForLibrary()).start();
@@ -38,7 +43,7 @@ public class MainFrame extends JFrame {
                 if (library != null) {
                     try {
                         remove(getCenterFrame());
-                        setCenterFrame( libraryFrame.getCenterFrame(0));
+                        setCenterFrame( libraryFrame.getCenterFrame(0 , null));
                         ArrayList<AlbumArtwork> artworks = centerFrame.getArtworks();
 
                     } catch (IOException e1) {
@@ -53,10 +58,34 @@ public class MainFrame extends JFrame {
                 if (library != null){
                     try {
                         remove(getCenterFrame());
-                        setCenterFrame( libraryFrame.getCenterFrame(1));
+                        setCenterFrame( libraryFrame.getCenterFrame(1 , null ));
 
                     } catch (IOException e1) {
                         e1.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        libraryFrame.getList().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()){
+                    JList<String> list = libraryFrame.getList();
+                    String playListName = list.getSelectedValue();
+                    ArrayList<Playlist> playlists = LibraryFrame.getPlaylists();
+                    for (Playlist playlist : playlists){
+                        if (playlist.getPlaylistName().equals(playListName)){
+                            if (playlist.getPlaylistSongs().size() > 0) {
+                                try {
+                                    remove(getCenterFrame());
+                                    setCenterFrame(libraryFrame.getCenterFrame(2, playlist));
+                                    break;
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -84,6 +113,11 @@ public class MainFrame extends JFrame {
 
     public CenterFrame getCenterFrame (){
         return centerFrame;
+    }
+
+
+    public void setPlaylists (){
+        this.playlists = libraryFrame.getPlaylists();
     }
 
     public static void playSongFromAlbum(Album album , Song startingSong) throws InterruptedException, UnsupportedAudioFileException, IOException {
@@ -116,6 +150,7 @@ public class MainFrame extends JFrame {
     public static void stopSong (){
         playerGUI.stopSong();
     }
+
 
     private class WaitForLibrary implements Runnable {
 

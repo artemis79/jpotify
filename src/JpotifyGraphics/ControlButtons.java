@@ -31,6 +31,8 @@ public class ControlButtons extends JPanel {
     private Album album;
     private Playlist playlist;
     private Library library;
+    private boolean isShuffle = false;
+    private boolean isRepeat = false;
     private int type;
     private final int PLAYING_ALBUM = 0;
     private final int PLAYING_PLAYLIST = 1;
@@ -42,6 +44,8 @@ public class ControlButtons extends JPanel {
     private final String REWIND_PATH = PARENT_PATH + "icons8-rewind-button-round-80.png";
     private final String SHUFFLE_PATH =  PARENT_PATH + "icons8-shuffle-80.png";
     private final String REPEAT_PATH =  PARENT_PATH + "icons8-repeat-80.png";
+    private final String EMPTY_SHUFFLE = PARENT_PATH + "icons8-shuffle-80 (2).png";
+    private final String EMPTY_REPEAT = PARENT_PATH + "icons8-repeat-80 (1).png";
 
     public ControlButtons () {
         super();
@@ -91,9 +95,9 @@ public class ControlButtons extends JPanel {
         forward = new JLabel();
         setImageButton(FORWARD_PATH , forward , 50);
         shuffle = new JLabel();
-        setImageButton(SHUFFLE_PATH , shuffle , 30);
+        setImageButton(EMPTY_SHUFFLE , shuffle , 30);
         repeat = new JLabel();
-        setImageButton(REPEAT_PATH , repeat , 30);
+        setImageButton(EMPTY_REPEAT , repeat , 30);
     }
 
     public void pauseResumeSong (Song song){

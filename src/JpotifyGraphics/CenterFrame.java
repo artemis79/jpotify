@@ -2,6 +2,7 @@ package JpotifyGraphics;
 
 import Logic.Album;
 import Logic.Library;
+import Logic.Playlist;
 import Logic.Song;
 
 import javax.imageio.ImageIO;
@@ -16,10 +17,12 @@ import java.util.HashMap;
 public class CenterFrame extends JPanel {
 
     private ArrayList<Album> albums;
+    private Playlist playlist;
     private Library library;
     private final int EMPTY_FRAME = -1;
     private final int SHOW_ALBUMS = 0;
     private final int SHOW_SONGS = 1;
+    private final int SHOW_PLAYLIST = 2;
     private ArrayList<AlbumArtwork> artworks;
     private PlayerGUI playerGUI;
     private final String ICON_PATH = "C:\\Users\\mahsh\\IdeaProjects\\Jpotify\\src\\Images\\icons8-spotify-filled-100.png";
@@ -75,15 +78,37 @@ public class CenterFrame extends JPanel {
             //this.add (scrollPane);
             this.setLayout(new BoxLayout(this , BoxLayout.PAGE_AXIS));
             for (Song song : songs){
-                SongFrame songFrame = new SongFrame(song , library);
+                SongFrame songFrame = new SongFrame(song , library );
                 container.add(songFrame);
             }
             container.setLayout(new BoxLayout(container , BoxLayout.PAGE_AXIS));
             scrollPane.setViewportView(container);
             this.add (scrollPane);
         }
+
         this.setVisible(true);
 
+    }
+
+    public CenterFrame (Playlist playlist , int type){
+        if (type == SHOW_PLAYLIST){
+            this.playlist = playlist;
+            ArrayList<Song> songs = playlist.getPlaylistSongs();
+            JScrollPane scrollPane = new JScrollPane();
+            Container container = new Container();
+            container.setLayout(new BoxLayout(container , BoxLayout.PAGE_AXIS));
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+            this.setLayout(new BoxLayout(this , BoxLayout.PAGE_AXIS));
+            for (Song song : songs){
+                SongFrame songFrame = new SongFrame(song , library);
+                container.add(songFrame);
+            }
+            container.setLayout(new BoxLayout(container , BoxLayout.PAGE_AXIS));
+            scrollPane.setViewportView(container);
+            this.add (scrollPane);
+
+        }
     }
 
     public int getType (){
@@ -93,6 +118,8 @@ public class CenterFrame extends JPanel {
     public ArrayList<AlbumArtwork> getArtworks (){
         return artworks;
     }
+
+
 
     private BufferedImage resize(BufferedImage img, int height, int width) {
         Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);

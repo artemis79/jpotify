@@ -181,7 +181,7 @@ public class PlayerGUI extends JPanel {
             public void run() {
                 while (!trackTime.isGreater(trackTime) && !exit){
                     try {
-                        songSlider.getSlider().getModel().setRangeProperties(wholeTime - song.getRemaining(), wholeTime, 0, wholeTime, true);
+                        songSlider.getSlider().getModel().setRangeProperties(wholeTime - song.getRemaining(),0, 0, wholeTime, true);
                         songSlider.incrementTimePassed(wholeTime ,song);
                         TimeUnit.SECONDS.sleep(1);
 

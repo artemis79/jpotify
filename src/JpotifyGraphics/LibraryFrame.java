@@ -1,6 +1,7 @@
 package JpotifyGraphics;
 
 import Logic.*;
+import javafx.print.PageLayout;
 import javazoom.jl.decoder.JavaLayerException;
 
 import javax.swing.*;
@@ -21,6 +22,7 @@ public class LibraryFrame extends JPanel {
     private ArrayList<Album> albums;
     private ArrayList<Song> songs;
     private CenterFrame centerFrame;
+    private static ArrayList<Playlist> playlists = new ArrayList<Playlist>();
 
 
     public LibraryFrame (){
@@ -45,14 +47,24 @@ public class LibraryFrame extends JPanel {
         return homeFrame.getButtonSongs ();
     }
 
+    public JList<String> getList (){
+        return homeFrame.getButtonPlaylist();
+    }
+
+    public static ArrayList<Playlist> getPlaylists (){
+        return playlists;
+    }
 
 
     public Library getLibrary (){
         return library;
     }
 
-    public CenterFrame getCenterFrame (int type) throws IOException {
-        centerFrame = new CenterFrame(library , type);
+    public CenterFrame getCenterFrame (int type , Playlist playlist) throws IOException {
+        if (playlist == null)
+            centerFrame = new CenterFrame(library  , type);
+        else
+            centerFrame = new CenterFrame(playlist , type);
         return centerFrame;
     }
 
@@ -114,6 +126,10 @@ public class LibraryFrame extends JPanel {
 
         public JButton getButtonSongs () { return buttonSongs;}
 
+        public JList<String> getButtonPlaylist (){
+            return playListFrame.getList();
+        }
+
     }
 
     public class PlayListFrame extends JPanel {
@@ -162,6 +178,7 @@ public class LibraryFrame extends JPanel {
                             String playListName = textField.getText();
                             Playlist playlist = new Playlist(playListName);
                             playlists.add (playlist);
+                            LibraryFrame.playlists.add(playlist);
                             playlistNames.addElement(playListName);
                             scrollPane.setViewportView(list);
                             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
@@ -183,7 +200,18 @@ public class LibraryFrame extends JPanel {
             scrollPane.getViewport().setBackground(Color.darkGray);
             this.add (scrollPane, BorderLayout.CENTER);
             scrollPane.setViewportView(container);
+            Playlist favourites = new Playlist("Favourite Songs");
+            playlists.add(favourites);
+            playlistNames.addElement(favourites.getPlaylistName());
+            scrollPane.setViewportView(list);
+            LibraryFrame.playlists.add(favourites);
+
         }
+
+        public JList<String> getList (){
+            return list;
+        }
+
     }
 
 }

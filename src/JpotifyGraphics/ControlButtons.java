@@ -1,9 +1,6 @@
 package JpotifyGraphics;
 
-import Logic.Album;
-import Logic.Library;
-import Logic.Playlist;
-import Logic.Song;
+import Logic.*;
 import javazoom.jl.player.Player;
 
 import javax.imageio.ImageIO;
@@ -19,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 public class ControlButtons extends JPanel {
 
@@ -55,6 +53,8 @@ public class ControlButtons extends JPanel {
         pauseOrResume.addMouseListener(new Pause ());
         forward.addMouseListener(new Next());
         rewind.addMouseListener(new Previous());
+        repeat.addMouseListener(new Repeat());
+        shuffle.addMouseListener(new Shuffle());
         this.setLayout(new FlowLayout());
         this.add (shuffle );
         this.add(rewind);
@@ -107,29 +107,60 @@ public class ControlButtons extends JPanel {
     public void nextSong (Song song) throws InterruptedException, UnsupportedAudioFileException, IOException {
         if (type == PLAYING_ALBUM) {
             ArrayList<Song> songs = album.getAlbumSongs();
-            Iterator<Song> it = songs.iterator();
-            while (it.hasNext()) {
-                Song findingSong = it.next();
-                if (findingSong.getSongName().equals(song.getSongName()) && it.hasNext()) {
-                    song.stop();
-                    //PlayerGUI.getSyncSong().stop();
-                    findingSong = it.next();
-                    MainFrame.playSongFromAlbum(album, findingSong);
-                    break;
+            if (!isShuffle) {
+                Iterator<Song> it = songs.iterator();
+                while (it.hasNext()) {
+                    Song findingSong = it.next();
+                    if (findingSong.getSongName().equals(song.getSongName()) && it.hasNext()) {
+                        song.stop();
+                        //PlayerGUI.getSyncSong().stop();
+                        findingSong = it.next();
+                        MainFrame.playSongFromAlbum(album, findingSong);
+                        break;
+                    }
+                    else if (findingSong.getSongName().equals(song.getSongName()) && !it.hasNext() && isRepeat){
+                        song.stop();
+                        findingSong = songs.get(0);
+                        MainFrame.playSongFromAlbum(album , findingSong);
+                    }
+
                 }
+            }
+            else{
+                int random = (new Random()).nextInt(songs.size() - 1);
+                while (songs.get(random).getSongName().equals(song.getSongName())){
+                    random = (new Random()).nextInt(songs.size() - 1);
+                }
+                song.stop();
+                MainFrame.playSongFromAlbum(album , songs.get(random));
+
             }
         }
         else if (type == PLAYING_LIBRARY){
             ArrayList<Song> songs = library.getAllSongs();
-            Iterator<Song> it = songs.iterator();
-            while (it.hasNext()) {
-                Song findingSong = it.next();
-                if (findingSong.getSongName().equals(song.getSongName()) && it.hasNext()) {
-                    song.stop();
-                    findingSong = it.next();
-                    MainFrame.playSongFromLibrary(library , findingSong);
-                    break;
+            if (!isShuffle) {
+                Iterator<Song> it = songs.iterator();
+                while (it.hasNext()) {
+                    Song findingSong = it.next();
+                    if (findingSong.getSongName().equals(song.getSongName()) && it.hasNext()) {
+                        song.stop();
+                        findingSong = it.next();
+                        MainFrame.playSongFromLibrary(library, findingSong);
+                        break;
+                    } else if (!it.hasNext() && isRepeat) {
+                        song.stop();
+                        MainFrame.playSongFromLibrary(library, songs.get(0));
+                    }
                 }
+            }
+            else{
+                int random = (new Random()).nextInt(songs.size() - 1);
+                while (songs.get(random).getSongName().equals(song.getSongName())){
+                    random = (new Random()).nextInt(songs.size() - 1);
+                }
+                song.stop();
+                MainFrame.playSongFromLibrary(library , songs.get(random));
+
             }
         }
 
@@ -148,18 +179,35 @@ public class ControlButtons extends JPanel {
                     }
                 }
             }
+            else if (song.getSongName().equals(songs.get(0).getSongName()) && isRepeat) {
+                song.stop();
+                //PlayerGUI.getSyncSong().stop();
+                MainFrame.playSongFromAlbum(album, songs.get(album.getAlbumSongs().size() - 1));
+            }
+
         }
         else if (type == PLAYING_LIBRARY) {
             ArrayList<Song> songs = library.getAllSongs();
-            if (!song.getSongName().equals(songs.get(0).getSongName())) {
-                int i;
-                for (i = 0; i < songs.size() - 1; i++) {
-                    if (songs.get(i + 1).getSongName().equals(song.getSongName())) {
-                        song.stop();
-                        //PlayerGUI.getSyncSong().stop();
-                        MainFrame.playSongFromLibrary(library , songs.get(i));
+            if (!isShuffle) {
+                if (!song.getSongName().equals(songs.get(0).getSongName())) {
+                    int i;
+                    for (i = 0; i < songs.size() - 1; i++) {
+                        if (songs.get(i + 1).getSongName().equals(song.getSongName())) {
+                            song.stop();
+                            MainFrame.playSongFromLibrary(library, songs.get(i));
+                        }
                     }
+                } else if (song.getSongName().equals(songs.get(0).getSongName()) && isRepeat) {
+                    song.stop();
+                    MainFrame.playSongFromLibrary(library, songs.get(songs.size() - 1));
                 }
+            }
+            else{
+                int random = (new Random()).nextInt(songs.size() - 1);
+                while (song.getSongName().equals(songs.get(random).getSongName()))
+                    random = (new Random()).nextInt(songs.size() - 1);
+                song.stop();
+                MainFrame.playSongFromLibrary(library , songs.get(random));
             }
         }
     }
@@ -317,6 +365,76 @@ public class ControlButtons extends JPanel {
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
+            }
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
+        }
+    }
+
+    private class Repeat implements MouseListener{
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (!isRepeat) {
+                setImageButton(REPEAT_PATH, repeat, 30);
+                isRepeat = true;
+            }
+            else{
+                setImageButton(EMPTY_REPEAT , repeat , 30);
+                isRepeat = false;
+            }
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
+        }
+    }
+
+    private class Shuffle implements MouseListener{
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (!isShuffle) {
+                setImageButton(SHUFFLE_PATH, shuffle, 30);
+                isShuffle = true;
+            }
+            else {
+                setImageButton(EMPTY_SHUFFLE , shuffle , 30);
+                isShuffle = false;
             }
         }
 

@@ -18,15 +18,15 @@ public class PersonGUI extends JPanel {
     private JPanel userPanel;
     private JLabel nameUP;
     private JPanel sharedPlaylistPanel;
-    private SharedPlaylist sharedPlaylist;
-    private ArrayList<Song> playlistSongs;
-    private ArrayList<JButton> songButton;
+   // private SharedPlaylist sharedPlaylist;
+  //  private ArrayList<Song> playlistSongs;
+  //  private ArrayList<JButton> songButton;
     public PersonGUI (Person p){
 
         super();
         user=p;
         this.setLayout(new BorderLayout());
-        this.setSize(new Dimension(400,400));
+        this.setSize(new Dimension(500,200));
         nameButton=new JButton(user.getUserName());
         nameButton.setBackground(Color.GRAY);
         this.add(nameButton,BorderLayout.NORTH);
@@ -34,31 +34,33 @@ public class PersonGUI extends JPanel {
         this.setBackground(Color.GRAY);
         this.setVisible(true);
         userPanel=new JPanel();
+        userPanel.setSize(new Dimension(800,800));
         userPanel.setLayout(new BorderLayout());
         nameUP=new JLabel(user.getUserName());
         userPanel.add(nameUP,BorderLayout.NORTH);
         nameUP.setVisible(true);
-        sharedPlaylistPanel=new JPanel();
-        sharedPlaylist=user.getSharedPlaylist();
-        playlistSongs=sharedPlaylist.getPlaylistSongs();
-        sharedPlaylistPanel.setLayout(new GridLayout(playlistSongs.size(),1));
+        //sharedPlaylistPanel=new JPanel();
+       // sharedPlaylist=user.getSharedPlaylist();
+        //playlistSongs=sharedPlaylist.getPlaylistSongs();
+        //sharedPlaylistPanel.setLayout(new GridLayout(playlistSongs.size(),1));
 
-        for (Song s:playlistSongs) {
+       /* for (Song s:playlistSongs) {
 
             JButton button=new JButton(s.getSongName());
             sharedPlaylistPanel.add(button);
 
 
-        }
+        }*/
 
-        userPanel.add(sharedPlaylistPanel,BorderLayout.SOUTH);
-        sharedPlaylistPanel.setVisible(true);
+        //userPanel.add(sharedPlaylistPanel,BorderLayout.SOUTH);
+       // sharedPlaylistPanel.setVisible(true);
 
         nameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 userPanel.setVisible(true);
                 JFrame myFrame=new JFrame("userPanel");
+                myFrame.setSize(new Dimension(800,800));
                 myFrame.add(userPanel);
                 myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 myFrame.setVisible(true);
@@ -69,5 +71,6 @@ public class PersonGUI extends JPanel {
 
     public JPanel getUserPanel() {
         return userPanel;
+
     }
 }

@@ -1,30 +1,25 @@
 package Network;
 
-import Logic.Person;
+import NewIdea.MainFrame;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 public class MainNetwork {
 
-  /*  public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
-        ServerSocket serverSocket=new ServerSocket(6500);
-        Server server=new Server(serverSocket);
-        server.start();
-        Person person = new Person("Kianahs");
-        System.out.println(InetAddress.getLocalHost());
-        Socket clientSocket=new Socket("127.0.0.1",6500);
-        Client client=new Client(person,clientSocket);
-        client.start();
-        ClientHandler clientHandler=new ClientHandler(clientSocket,);
-       // server.notify();
+        try {
+            ServerSocket serverSocket = new ServerSocket(6500);
+            Server t = new Server(serverSocket);
+            t.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-       // client.sendUserInformation();
-       // server.getUserInformation();
+        MainFrame myFrame=new MainFrame();
 
 
-    }*/
+
+    }
 }

@@ -67,24 +67,5 @@ public class Server extends Thread {
         }
     }
 
-
-
-    public static void main(String[] args) {
-
-        try
-        {
-            ServerSocket serverSocket=new ServerSocket(6500);
-            Server t = new Server(serverSocket);
-            t.start();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-
-
-
-
 }
 

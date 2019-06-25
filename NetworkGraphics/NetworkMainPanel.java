@@ -2,6 +2,7 @@ package NetworkGraphics;
 
 import Logic.Client;
 import Logic.Person;
+import com.sun.xml.internal.messaging.saaj.soap.JpegDataContentHandler;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -12,35 +13,34 @@ import java.util.ArrayList;
 
 public class NetworkMainPanel extends JPanel  {
 
-    static JList jList;
     static DefaultListModel<PersonGUI> clientPersonsGUI=new DefaultListModel<>();
+    static JPanel allUsersPanel;
 
     public NetworkMainPanel() {
         super();
         Person p=new Person("me");
         PersonGUI personGUI1=new PersonGUI(p);
-        this.setLayout(new BorderLayout());
-        this.setSize(new Dimension(800,850));
-        this.setOpaque(true);
-        this.setBackground(Color.green);
-        jList=new JList();
-        jList.setSize(new Dimension(400,600));
         clientPersonsGUI.addElement(personGUI1);
+        this.setSize(new Dimension(300,900));
+        this.setOpaque(true);
+        allUsersPanel=new JPanel();
         makeUseresIcon();
-        jList.setVisible(true);
-        jList.setBackground(Color.lightGray);
-        this.add(jList,BorderLayout.EAST);
-
+        allUsersPanel.setOpaque(true);
+        allUsersPanel.setBackground(Color.PINK);
+        allUsersPanel.setForeground(Color.GRAY);
+        allUsersPanel.setVisible(true);
+        this.add(allUsersPanel);
         this.setVisible(true);
     }
 
     public void makeUseresIcon() {
-        //System.out.println("makeIcons");
-        System.out.println(clientPersonsGUI.size());
 
-        for (int i=1 ; i<clientPersonsGUI.size() ; i++) {
+        allUsersPanel.setLayout(new GridLayout());
+        allUsersPanel.setSize(new Dimension(300,900));
 
-            jList.add(clientPersonsGUI.elementAt(i));
+        for(int i=0 ; i<clientPersonsGUI.size() ; i++){
+
+            allUsersPanel.add(clientPersonsGUI.elementAt(i));
         }
 
     }
@@ -51,12 +51,11 @@ public class NetworkMainPanel extends JPanel  {
 
     public static void updateList(){
 
-        jList.invalidate();
-        jList.validate();
-        jList.repaint();
+        allUsersPanel.invalidate();
+        allUsersPanel.validate();
+        allUsersPanel.repaint();
     }
 
-    public static JList getjList() {
-        return jList;
-    }
+
+
 }

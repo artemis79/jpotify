@@ -26,7 +26,7 @@ public class PersonGUI extends JPanel {
         super();
         user=p;
         this.setLayout(new BorderLayout());
-        this.setSize(new Dimension(400,400));
+        this.setSize(new Dimension(300,200));
         nameButton=new JButton(user.getUserName());
         nameButton.setBackground(Color.GRAY);
         this.add(nameButton,BorderLayout.NORTH);

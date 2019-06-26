@@ -114,6 +114,16 @@ public class Library implements Serializable , Sort  {
         FileOutputStream f1=new FileOutputStream("SavedLibrary");
         ObjectOutputStream out=new ObjectOutputStream(f1);
         out.writeObject(this);
+
+        //finialize//
+    }
+
+
+    @Override
+    protected void finalize() throws IOException {
+
+        save();
+
     }
 
     public void read() throws IOException, ClassNotFoundException {

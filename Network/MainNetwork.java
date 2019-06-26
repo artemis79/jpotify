@@ -1,14 +1,9 @@
 package Network;
 
-import Logic.Person;
-import NetworkGraphics.NetworkMainPanel;
+import NewIdea.MainFrame;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 public class MainNetwork {
 
@@ -22,16 +17,8 @@ public class MainNetwork {
             e.printStackTrace();
         }
 
+        MainFrame myFrame=new MainFrame();
 
-        JFrame myFrame = new JFrame("network");
-        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        myFrame.setLayout(new BorderLayout());
-        //myFrame.setBackground(Color.PINK);
-        //myFrame.setForeground(Color.PINK);
-        myFrame.setSize(1000, 900);
-        NetworkMainPanel networkMainPanel = new NetworkMainPanel();
-        myFrame.add(networkMainPanel,BorderLayout.EAST);
-        myFrame.setVisible(true);
 
 
     }

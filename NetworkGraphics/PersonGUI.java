@@ -3,6 +3,7 @@ package NetworkGraphics;
 import Logic.Person;
 import Logic.SharedPlaylist;
 import Logic.Song;
+import NewIdea.MainFrame;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -26,7 +27,7 @@ public class PersonGUI extends JPanel {
         super();
         user=p;
         this.setLayout(new BorderLayout());
-        this.setSize(new Dimension(300,200));
+        this.setSize(new Dimension(500,200));
         nameButton=new JButton(user.getUserName());
         nameButton.setBackground(Color.GRAY);
         this.add(nameButton,BorderLayout.NORTH);
@@ -36,6 +37,7 @@ public class PersonGUI extends JPanel {
         userPanel=new JPanel();
         userPanel.setSize(new Dimension(800,800));
         userPanel.setLayout(new BorderLayout());
+        userPanel.setBackground(Color.white);
         nameUP=new JLabel(user.getUserName());
         userPanel.add(nameUP,BorderLayout.NORTH);
         nameUP.setVisible(true);
@@ -59,6 +61,8 @@ public class PersonGUI extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 userPanel.setVisible(true);
+                //MainFrame.jPanel.add(userPanel);
+                //SwingUtilities.updateComponentTreeUI(MainFrame);
                 JFrame myFrame=new JFrame("userPanel");
                 myFrame.setSize(new Dimension(800,800));
                 myFrame.add(userPanel);

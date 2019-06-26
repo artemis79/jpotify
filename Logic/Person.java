@@ -16,7 +16,6 @@ public class Person implements Serializable {
 
     public Person(String userName){
         this.userName = userName;
-
         //for test
         sharedPlaylist=new SharedPlaylist("my playlist");
 

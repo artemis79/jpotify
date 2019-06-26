@@ -163,6 +163,33 @@ public class ControlButtons extends JPanel {
 
             }
         }
+        else if (type == PLAYING_PLAYLIST){
+            ArrayList<Song> songs = playlist.getPlaylistSongs();
+            if (!isShuffle) {
+                Iterator<Song> it = songs.iterator();
+                while (it.hasNext()) {
+                    Song findingSong = it.next();
+                    if (findingSong.getSongName().equals(song.getSongName()) && it.hasNext()) {
+                        song.stop();
+                        findingSong = it.next();
+                        MainFrame.playSongFromPlaylist(playlist , findingSong);
+                        break;
+                    } else if (!it.hasNext() && isRepeat) {
+                        song.stop();
+                        MainFrame.playSongFromPlaylist(playlist , songs.get(0));
+                    }
+                }
+            }
+            else{
+                int random = (new Random()).nextInt(songs.size() - 1);
+                while (songs.get(random).getSongName().equals(song.getSongName())){
+                    random = (new Random()).nextInt(songs.size() - 1);
+                }
+                song.stop();
+                MainFrame.playSongFromPlaylist(playlist , songs.get(random));
+
+            }
+        }
 
     }
 
@@ -210,6 +237,30 @@ public class ControlButtons extends JPanel {
                 MainFrame.playSongFromLibrary(library , songs.get(random));
             }
         }
+        else if (type == PLAYING_PLAYLIST){
+            ArrayList<Song> songs = playlist.getPlaylistSongs();
+            if (!isShuffle) {
+                if (!song.getSongName().equals(songs.get(0).getSongName())) {
+                    int i;
+                    for (i = 0; i < songs.size() - 1; i++) {
+                        if (songs.get(i + 1).getSongName().equals(song.getSongName())) {
+                            song.stop();
+                            MainFrame.playSongFromPlaylist(playlist, songs.get(i));
+                        }
+                    }
+                } else if (song.getSongName().equals(songs.get(0).getSongName()) && isRepeat) {
+                    song.stop();
+                    MainFrame.playSongFromPlaylist(playlist, songs.get(songs.size() - 1));
+                }
+            }
+            else{
+                int random = (new Random()).nextInt(songs.size() - 1);
+                while (song.getSongName().equals(songs.get(random).getSongName()))
+                    random = (new Random()).nextInt(songs.size() - 1);
+                song.stop();
+                MainFrame.playSongFromPlaylist(playlist , songs.get(random));
+            }
+        }
     }
 
     public void setAlbum (Album album){
@@ -220,6 +271,11 @@ public class ControlButtons extends JPanel {
     public void setLibrary (Library library){
         this.library = library;
         type = PLAYING_LIBRARY;
+    }
+
+    public  void setPlaylist (Playlist playlist){
+        this.playlist = playlist;
+        type = PLAYING_PLAYLIST;
     }
 
 
@@ -291,7 +347,7 @@ public class ControlButtons extends JPanel {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (album != null&& song != null && type == PLAYING_ALBUM){
+            if ( song != null){
                 try {
                     nextSong(song);
                     PlayerGUI.getSyncSong().stop();
@@ -342,7 +398,7 @@ public class ControlButtons extends JPanel {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (album != null && song != null && type == PLAYING_ALBUM){
+            if (song != null ){
                 try {
                     previousSong(song);
                     PlayerGUI.getSyncSong().stop();
@@ -353,18 +409,7 @@ public class ControlButtons extends JPanel {
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-            }
-            else if (library != null && song != null && type == PLAYING_LIBRARY){
-                try {
-                    previousSong(song);
-                    PlayerGUI.getSyncSong().stop();
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                } catch (UnsupportedAudioFileException e1) {
-                    e1.printStackTrace();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+
             }
         }
 

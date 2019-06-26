@@ -85,11 +85,57 @@ public class PlayerGUI extends JPanel {
             soundSlider.setBackground(Color.darkGray);
             soundSlider.setForeground(Color.LIGHT_GRAY);
             try {
-                setImage();
+                setImage(VOLUME_PATH);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             this.setLayout(new FlowLayout());
+            soundSlider.addChangeListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    Mixer.Info[] mixers = AudioSystem.getMixerInfo();
+                    //System.out.println("There are " + mixers.length + " mixer info objects");
+                    for (Mixer.Info mixerInfo : mixers) {
+                        //System.out.println("mixer name: " + mixerInfo.getName());
+                        Mixer mixer = AudioSystem.getMixer(mixerInfo);
+                        Line.Info[] lineInfos = mixer.getTargetLineInfo(); // target, not source
+                        //changes all the volumes
+
+                        for (Line.Info lineInfo : lineInfos) {
+                            //System.out.println("  Line.Info: " + lineInfo);
+                            Line line = null;
+                            boolean opened = true;
+                            try {
+                                line = mixer.getLine(lineInfo);
+                                opened = line.isOpen() || line instanceof Clip;
+                                if (!opened) {
+                                    line.open();
+                                }
+                                FloatControl volCtrl = (FloatControl) line.getControl(FloatControl.Type.VOLUME);
+                                int volume = soundSlider.getValue();
+                                if (volume == 0)
+                                    setImage(MUTE_PATH);
+                                else if (volume < 40)
+                                    setImage(LOW_VOLUME_PATH);
+                                else
+                                    setImage(VOLUME_PATH);
+                                volCtrl.setValue((float) volume / 100);
+                                //System.out.println("    volCtrl.getValue() = " + volCtrl.getValue());
+                            } catch (LineUnavailableException exception) {
+                                exception.printStackTrace();
+                            } catch (IllegalArgumentException iaEx) {
+                                //System.out.println("  -!-  " + iaEx);
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            } finally {
+                                if (line != null && !opened) {
+                                    line.close();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
             this.add (volumeLabel);
             this.add (soundSlider);
             this.setVisible(true);
@@ -97,10 +143,11 @@ public class PlayerGUI extends JPanel {
 
         }
 
-        private void setImage () throws IOException {
-            File file = new File (VOLUME_PATH);
+
+        private void setImage (String path) throws IOException {
+            File file = new File (path);
             BufferedImage bufferedImage = ImageIO.read(file);
-            bufferedImage = resize(bufferedImage , 20 , 20);
+            bufferedImage = resize(bufferedImage , 30 , 30);
             volumeLabel.setIcon(new ImageIcon(bufferedImage));
 
         }
@@ -202,15 +249,6 @@ public class PlayerGUI extends JPanel {
 
     }
 
-
-    private class SoundChangeSlider implements ChangeListener {
-
-
-        @Override
-        public void stateChanged(ChangeEvent e) {
-
-        }
-    }
 
     private class PlayerChangeSlider implements ChangeListener{
 

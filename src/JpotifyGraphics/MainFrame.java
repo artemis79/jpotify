@@ -147,6 +147,18 @@ public class MainFrame extends JFrame {
 
     }
 
+    public static void playSongFromPlaylist (Playlist playlist , Song startingSong) throws InterruptedException, UnsupportedAudioFileException, IOException {
+        ArrayList<Song> songs = playlist.getPlaylistSongs();
+        int i;
+        for (i = 0; i < songs.size(); i++){
+            if (songs.get(i).getSongName().equals(startingSong.getSongName())){
+                break;
+            }
+        }
+        playerGUI.getButtons().setPlaylist(playlist);
+        playerGUI.playSong(songs.get(i));
+    }
+
     public static void stopSong (){
         playerGUI.stopSong();
     }

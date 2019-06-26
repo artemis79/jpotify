@@ -25,6 +25,7 @@ public class SongFrame extends JPanel {
     private Song song;
     private Library library;
     private ArrayList<Playlist> playlists;
+    private Playlist currentPlaylist;
     private JLabel songName;
     private JLabel songAlbum;
     private JLabel artist;
@@ -189,6 +190,100 @@ public class SongFrame extends JPanel {
         this.add (artist);
         this.add (trackTime);
         this.setVisible(true);
+    }
+
+    public SongFrame (Song song , Playlist playlist){
+        super();
+        this.setOpaque(true);
+        this.setBackground(Color.darkGray);
+        this.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        this.setPreferredSize(new Dimension(300 , 50));
+        this.setLayout(new GridLayout(1 , 5));
+        this.song = song;
+        this.currentPlaylist = playlist;
+        songName = new JLabel("     " + song.getSongName());
+        songName.setForeground(Color.LIGHT_GRAY);
+        songAlbum = new JLabel(song.getAlbumName());
+        songAlbum.setForeground(Color.LIGHT_GRAY);
+        artist = new JLabel(song.getArtist());
+        artist.setForeground(Color.LIGHT_GRAY);
+        trackTime = new JLabel((new Time(0 , 0)).toString());
+        try {
+            trackTime = new JLabel(song.getTrackDuration().toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        }
+        trackTime.setForeground(Color.LIGHT_GRAY);
+        playSong = new JButton();
+        addSong = new JButton();
+        try {
+            setButtonImage(PLAY_PATH , playSong);
+            setButtonImage(ADD_TO_PLAYLIST , addSong);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        playSong.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    MainFrame.stopSong();
+                    MainFrame.playSongFromPlaylist(playlist , song);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                } catch (UnsupportedAudioFileException e1) {
+                    e1.printStackTrace();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        addSong.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<Playlist> playlists = LibraryFrame.getPlaylists();
+                JFrame frame = new JFrame("Select Your Playlist");
+                DefaultListModel model = new DefaultListModel();
+                for (Playlist playlist : playlists){
+                    if (!playlist.getPlaylistName().equals(currentPlaylist.getPlaylistName()))
+                        model.addElement(playlist.getPlaylistName());
+                }
+                JList<String> list = new JList<>(model);
+                frame.setPreferredSize(new Dimension(100 , 200));
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                list.setForeground(Color.LIGHT_GRAY);
+                list.setBackground(Color.darkGray);
+                frame.add (list);
+                frame.setVisible(true);
+                list.addListSelectionListener(new ListSelectionListener() {
+                    @Override
+                    public void valueChanged(ListSelectionEvent e) {
+                        if (!e.getValueIsAdjusting()){
+                            String selectedPlaylist = list.getSelectedValue();
+                            for (Playlist playlist : playlists){
+                                if (playlist.getPlaylistName().equals(selectedPlaylist))
+                                    playlist.addSongToPlaylist(song);
+                            }
+                            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                        }
+                    }
+                });
+            }
+        });
+        Container container = new Container();
+        container.setLayout(new FlowLayout());
+        container.add (playSong);
+        container.add(addSong);
+        container.setVisible(true);
+        this.add (container);
+        this.add (songName);
+        this.add (songAlbum);
+        this.add (artist);
+        this.add (trackTime);
+        this.setVisible(true);
+
+
     }
 
     private void setButtonImage (String filePath , JButton button) throws IOException {

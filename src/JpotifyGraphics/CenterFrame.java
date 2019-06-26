@@ -101,7 +101,7 @@ public class CenterFrame extends JPanel {
 
             this.setLayout(new BoxLayout(this , BoxLayout.PAGE_AXIS));
             for (Song song : songs){
-                SongFrame songFrame = new SongFrame(song , library);
+                SongFrame songFrame = new SongFrame(song , playlist);
                 container.add(songFrame);
             }
             container.setLayout(new BoxLayout(container , BoxLayout.PAGE_AXIS));

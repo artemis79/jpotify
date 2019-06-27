@@ -1,4 +1,5 @@
 package Logic;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Album {
@@ -11,13 +12,12 @@ public class Album {
     public Album(String albumName , String artist ,  byte[] albumArtwork ){
         ///mire az kole song ha ke esme albumeshoon yekie peida mikone mirize too list ye album misaze
 
-        this.albumName = albumName;
+        this.albumName=albumName;
         this.artist=artist;
         albumSongs=new ArrayList<>();
         this.albumArtwork=albumArtwork;
 
     }
-
 
 
     public String getAlbumName() {
@@ -31,7 +31,6 @@ public class Album {
     public ArrayList<Song> getAlbumSongs() {
         return albumSongs;
     }
-
 
 
     public byte[] getAlbumArtwork() {

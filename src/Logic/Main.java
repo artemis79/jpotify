@@ -4,16 +4,17 @@ import javazoom.jl.decoder.JavaLayerException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 
-public class Main {
+public class Main  {
     public static void main(String[] args) throws FileNotFoundException, JavaLayerException, InterruptedException {
 
         Library library=new Library(" your Library "," kianahs ");
         try {
-            library.importSongsPathToLibraryFromPc(" ");
+            library.importSongsPathToLibraryFromPc("C:\\Users\\Kiana\\Music\\Jpotify");
         } catch (IOException e) {
             e.printStackTrace();
         }

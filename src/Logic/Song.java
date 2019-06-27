@@ -1,24 +1,14 @@
 package Logic;
 
-import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.mp3.MP3File;
-import org.jaudiotagger.tag.datatype.Artwork;
-import org.jaudiotagger.tag.id3.ID3v1Tag;
 
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
-import java.awt.*;
 import java.io.*;
-import java.util.Map;
 
 /**
  * The class song holds information about a song

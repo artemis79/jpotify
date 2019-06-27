@@ -5,13 +5,14 @@ import javafx.print.PageLayout;
 import javazoom.jl.decoder.JavaLayerException;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class LibraryFrame extends JPanel {
@@ -23,6 +24,7 @@ public class LibraryFrame extends JPanel {
     private ArrayList<Song> songs;
     private CenterFrame centerFrame;
     private static ArrayList<Playlist> playlists = new ArrayList<Playlist>();
+    private final String SAVE_LIBRARY = "save.bin";
 
 
     public LibraryFrame (){
@@ -68,6 +70,10 @@ public class LibraryFrame extends JPanel {
         return centerFrame;
     }
 
+    public void setLibrary (Library library){
+        this.library = library;
+    }
+
 
     private class HomeFrame extends JPanel {
         private JButton buttonLibrary;
@@ -103,6 +109,12 @@ public class LibraryFrame extends JPanel {
                             library.importSongsPathToLibraryFromPc(selectedFile.getAbsolutePath());
                             albums = library.getAllAlbums();
                             songs = library.getAllSongs();
+                            File file = new File (SAVE_LIBRARY);
+                            if (file.exists())
+                                file.delete();
+                            DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(SAVE_LIBRARY));
+                            dataOutputStream.writeUTF(selectedFile.getAbsolutePath());
+                            dataOutputStream.close();
 
                         } catch (IOException e1) {
                             e1.printStackTrace();
@@ -135,12 +147,18 @@ public class LibraryFrame extends JPanel {
     public class PlayListFrame extends JPanel {
 
         private ArrayList<Playlist> playlists;
-        private JLabel labelPlayList;
+        private JLabel labelPlaylist;;
+
         private final String LABEL = "PlayLists";
         private JButton buttonAdd;
-        private final String LABEL_ADD = "Add PlayList";
+        private final String LABEL_ADD = "Add Playlist";
+        private JButton buttondelete;
+        private final String LABEL_DELETE = "Delete Playlist";
         private DefaultListModel<String> playlistNames;
         private JList<String> list;
+        private DataOutputStream dataOutputStream;
+        private DataInputStream dataInputStream;
+        private final String SAVE_PLAYLIST = "playlists.bin";
 
 
         public PlayListFrame (){
@@ -156,11 +174,12 @@ public class LibraryFrame extends JPanel {
             this.setOpaque(true);
             container.setBackground(Color.darkGray);
             container.setPreferredSize(new Dimension(130 , 550));
-            labelPlayList = new JLabel(LABEL);
-            labelPlayList.setForeground(Color.LIGHT_GRAY);
-            labelPlayList.setBackground(Color.darkGray);
-            labelPlayList.setFont(new Font(labelPlayList.getName(), Font.PLAIN, 25));
+            labelPlaylist = new JLabel(LABEL);
+            labelPlaylist.setForeground(Color.LIGHT_GRAY);
+            labelPlaylist.setBackground(Color.darkGray);
+            labelPlaylist.setFont(new Font(labelPlaylist.getName(), Font.PLAIN, 25));
             buttonAdd = new JButton(LABEL_ADD);
+            buttondelete = new JButton(LABEL_DELETE);
             list = new JList<String>(playlistNames);
             list.setBackground(Color.darkGray);
             list.setForeground(Color.LIGHT_GRAY);
@@ -181,6 +200,12 @@ public class LibraryFrame extends JPanel {
                             LibraryFrame.playlists.add(playlist);
                             playlistNames.addElement(playListName);
                             scrollPane.setViewportView(list);
+                            try {
+                                dataOutputStream.writeUTF(playListName);
+                                System.out.println("yes they were written");
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            }
                             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
                         }
                     });
@@ -192,24 +217,101 @@ public class LibraryFrame extends JPanel {
                     frame.setVisible(true);
                 }
             });
+            buttondelete.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFrame frame = new JFrame("Delete Playlist");
+                    DefaultListModel<String> model = new DefaultListModel<>();
+                    for (int i = 0; i < playlists.size(); i++){
+                        if (!playlists.get(i).getPlaylistName().equals("Favourite Songs") && !playlists.get(i).getPlaylistName().equals("Shared Playlist")) {
+                            model.addElement(playlists.get(i).getPlaylistName());
+                        }
+                    }
+                    JList<String> list = new JList<String>(model);
+                    list.setBackground(Color.darkGray);
+                    list.setForeground(Color.LIGHT_GRAY);
+                    frame.add (list);
+                    list.addListSelectionListener(new ListSelectionListener() {
+                        @Override
+                        public void valueChanged(ListSelectionEvent e) {
+                            playlistNames.removeElement(list.getSelectedValue());
+                            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                        }
+                    });
+                    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    frame.setVisible(true);
+                }
+            });
             this.setLayout(new BorderLayout());
-            this.add (labelPlayList , BorderLayout.NORTH);
-            this.add (buttonAdd , BorderLayout.SOUTH);
+            this.add (labelPlaylist , BorderLayout.NORTH);
+            Container tmpContainer = new Container();
+            tmpContainer.setLayout(new GridLayout(2 , 1));
+            tmpContainer.add(buttonAdd);
+            tmpContainer.add(buttondelete);
+            tmpContainer.setVisible(true);
+            this.add (tmpContainer , BorderLayout.SOUTH);
             container.add (list , BorderLayout.CENTER);
             scrollPane.add (container);
             scrollPane.getViewport().setBackground(Color.darkGray);
             this.add (scrollPane, BorderLayout.CENTER);
             scrollPane.setViewportView(container);
+
             Playlist favourites = new Playlist("Favourite Songs");
-            playlists.add(favourites);
             playlistNames.addElement(favourites.getPlaylistName());
+            playlists.add(favourites);
+            Playlist sharedPlaylist = new Playlist("Shared Playlist");
+            playlistNames.addElement(sharedPlaylist.getPlaylistName());
             scrollPane.setViewportView(list);
             LibraryFrame.playlists.add(favourites);
+            LibraryFrame.playlists.add(sharedPlaylist);
+            File savePlaylists = new File (SAVE_PLAYLIST);
+            try {
+                dataOutputStream = new DataOutputStream(new FileOutputStream(SAVE_PLAYLIST));
+                dataOutputStream.writeUTF(favourites.getPlaylistName());
+                dataOutputStream.writeUTF(sharedPlaylist.getPlaylistName());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
 
         }
 
         public JList<String> getList (){
             return list;
+        }
+
+        private void getPlaylistsFromFile (){
+            try {
+                dataInputStream = new DataInputStream(new FileInputStream(SAVE_PLAYLIST));
+                while (true){
+                    String playlistName = dataInputStream.readUTF();
+                    File file = new File (playlistName + ".bin");
+                    if (file.exists()){
+                        ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file.getAbsolutePath()));
+                        Song song;
+                        Playlist playlist = new Playlist(playlistName);
+                        while (true){
+                            try {
+                                song = (Song) objectInputStream.readObject();
+                            }catch (EOFException e){
+                                e.printStackTrace();
+                                break;
+                            }
+                            playlist.addSongToPlaylist(song);
+                        }
+                    }
+                }
+
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
     }

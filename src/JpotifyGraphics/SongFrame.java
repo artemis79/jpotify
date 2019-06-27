@@ -17,7 +17,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class SongFrame extends JPanel {
@@ -262,8 +264,15 @@ public class SongFrame extends JPanel {
                         if (!e.getValueIsAdjusting()){
                             String selectedPlaylist = list.getSelectedValue();
                             for (Playlist playlist : playlists){
-                                if (playlist.getPlaylistName().equals(selectedPlaylist))
+                                if (playlist.getPlaylistName().equals(selectedPlaylist)) {
                                     playlist.addSongToPlaylist(song);
+                                    try {
+                                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(playlist.getPlaylistName()+ ".bin"));
+                                        objectOutputStream.writeObject(song);
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
                             }
                             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
                         }

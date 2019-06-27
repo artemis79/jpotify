@@ -1,7 +1,8 @@
 package Logic;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Playlist {
+public class Playlist implements Serializable {
 
     private String playlistName;
     private ArrayList<Song> playlistSongs;
@@ -37,6 +38,10 @@ public class Playlist {
 
         playlistSongs.remove(s);
 
+    }
+
+    public void setPlaylistSongs (ArrayList<Song> songs){
+        this.playlistSongs = songs;
     }
 
 

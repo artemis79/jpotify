@@ -1,3 +1,4 @@
+
 package Logic;
 import Logic.Song;
 import javazoom.jl.decoder.JavaLayerException;
@@ -115,5 +116,9 @@ public class Library {
 
         }
 
+    }
+
+    public void setAllSongs (ArrayList<Song> songs){
+        this.allSongs = songs;
     }
 }

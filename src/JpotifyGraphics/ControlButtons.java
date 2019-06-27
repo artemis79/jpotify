@@ -15,8 +15,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class ControlButtons extends JPanel {
 
@@ -28,6 +30,7 @@ public class ControlButtons extends JPanel {
     private Song song;
     private Album album;
     private Playlist playlist;
+    ArrayList<Song> shuffledSongs;
     private Library library;
     private boolean isShuffle = false;
     private boolean isRepeat = false;
@@ -47,7 +50,6 @@ public class ControlButtons extends JPanel {
 
     public ControlButtons () {
         super();
-        //setOpaque(false);
         setBackground(Color.darkGray);
         setImages();
         pauseOrResume.addMouseListener(new Pause ());
@@ -139,6 +141,7 @@ public class ControlButtons extends JPanel {
         else if (type == PLAYING_LIBRARY){
             ArrayList<Song> songs = library.getAllSongs();
             if (!isShuffle) {
+                shuffledSongs = null;
                 Iterator<Song> it = songs.iterator();
                 while (it.hasNext()) {
                     Song findingSong = it.next();
@@ -154,13 +157,27 @@ public class ControlButtons extends JPanel {
                 }
             }
             else{
-                int random = (new Random()).nextInt(songs.size() - 1);
-                while (songs.get(random).getSongName().equals(song.getSongName())){
-                    random = (new Random()).nextInt(songs.size() - 1);
+                if (shuffledSongs == null) {
+                    shuffledSongs = library.getAllSongs();
+                    Collections.shuffle(shuffledSongs);
                 }
-                song.stop();
-                MainFrame.playSongFromLibrary(library , songs.get(random));
-
+               song.stop();
+               Library shuffleLibrary = new Library("shuffle" , "me");
+               shuffleLibrary.setAllSongs(shuffledSongs);
+                Iterator<Song> it = shuffledSongs.iterator();
+                while (it.hasNext()) {
+                    Song findingSong = it.next();
+                    if (findingSong.getSongName().equals(song.getSongName()) && it.hasNext()) {
+                        song.stop();
+                        findingSong = it.next();
+                        MainFrame.playSongFromLibrary(shuffleLibrary, findingSong);
+                        break;
+                    } else if (!it.hasNext() && isRepeat) {
+                        song.stop();
+                        MainFrame.playSongFromLibrary(library, songs.get(0));
+                    }
+                }
+               
             }
         }
         else if (type == PLAYING_PLAYLIST){
@@ -216,6 +233,7 @@ public class ControlButtons extends JPanel {
         else if (type == PLAYING_LIBRARY) {
             ArrayList<Song> songs = library.getAllSongs();
             if (!isShuffle) {
+                shuffledSongs = null;
                 if (!song.getSongName().equals(songs.get(0).getSongName())) {
                     int i;
                     for (i = 0; i < songs.size() - 1; i++) {
@@ -230,11 +248,25 @@ public class ControlButtons extends JPanel {
                 }
             }
             else{
-                int random = (new Random()).nextInt(songs.size() - 1);
-                while (song.getSongName().equals(songs.get(random).getSongName()))
-                    random = (new Random()).nextInt(songs.size() - 1);
+                if (shuffledSongs == null) {
+                    shuffledSongs = library.getAllSongs();
+                    Collections.shuffle(shuffledSongs);
+                }
                 song.stop();
-                MainFrame.playSongFromLibrary(library , songs.get(random));
+                Library shuffleLibrary = new Library("shuffle" , "me");
+                shuffleLibrary.setAllSongs(shuffledSongs);
+                if (!song.getSongName().equals(shuffledSongs.get(0).getSongName())) {
+                    int i;
+                    for (i = 0; i < shuffledSongs.size() - 1; i++) {
+                        if (shuffledSongs.get(i + 1).getSongName().equals(song.getSongName())) {
+                            song.stop();
+                            MainFrame.playSongFromLibrary(shuffleLibrary, songs.get(i));
+                        }
+                    }
+                } else if (song.getSongName().equals(songs.get(0).getSongName()) && isRepeat) {
+                    song.stop();
+                    MainFrame.playSongFromLibrary(shuffleLibrary, shuffledSongs.get(songs.size() - 1));
+                }
             }
         }
         else if (type == PLAYING_PLAYLIST){
@@ -254,11 +286,7 @@ public class ControlButtons extends JPanel {
                 }
             }
             else{
-                int random = (new Random()).nextInt(songs.size() - 1);
-                while (song.getSongName().equals(songs.get(random).getSongName()))
-                    random = (new Random()).nextInt(songs.size() - 1);
-                song.stop();
-                MainFrame.playSongFromPlaylist(playlist , songs.get(random));
+
             }
         }
     }

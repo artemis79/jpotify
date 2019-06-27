@@ -15,10 +15,11 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 
 public class MainFrame extends JFrame {
 
@@ -28,6 +29,7 @@ public class MainFrame extends JFrame {
     private LibraryFrame libraryFrame;
     private static PlayerGUI playerGUI;
     private CenterFrame centerFrame;
+    private final String SAVE_LIBRARY = "save.bin";
 
     public MainFrame () throws IOException, JavaLayerException, InterruptedException {
         super(LABEL);
@@ -168,8 +170,27 @@ public class MainFrame extends JFrame {
 
         @Override
         public void run() {
-            while (library == null || library.getAllSongs().size() == 0)
+            try {
+                DataInputStream dataInputStream = new DataInputStream(new FileInputStream(SAVE_LIBRARY));
+                String path;
+                File file = new File (SAVE_LIBRARY);
+                if (file.exists() && file.length() != 0) {
+                    path = dataInputStream.readUTF();
+                    library = new Library("Your library", "me");
+                    library.importSongsPathToLibraryFromPc(path);
+                    libraryFrame.setLibrary(library);
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JavaLayerException e) {
+                e.printStackTrace();
+            }
+
+            while (library == null || library.getAllSongs().size() == 0) {
                 library = libraryFrame.getLibrary();
+            }
             try {
                 TimeUnit.MILLISECONDS.sleep(50);
             } catch (InterruptedException e) {

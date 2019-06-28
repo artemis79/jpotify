@@ -1,6 +1,7 @@
 package Network;
 
 import Logic.Person;
+import javazoom.jl.decoder.JavaLayerException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -70,6 +71,8 @@ public class ClientHandler extends Thread{
             }
         } catch (IOException e)
         {
+            e.printStackTrace();
+        } catch (JavaLayerException e) {
             e.printStackTrace();
         }
     }

@@ -9,29 +9,25 @@ import java.awt.*;
 
 public class NetworkMainPanel2 extends JPanel {
 
-    private DefaultListModel<PersonGUI> clientPersonsGUI=new DefaultListModel<>();
-    private Client client;
-   // private MainFrame mainFrame;
+    private static DefaultListModel<PersonGUI> clientPersonsGUI=new DefaultListModel<>();
+
 
 
 
     public NetworkMainPanel2(){
 
         super();
-        //this.mainFrame;
-        this.setSize(new Dimension(300,800));
-        this.setLayout(new GridLayout(20,1));
-        this.setBackground(Color.white);
-        this.setForeground(Color.blue);
+        GridLayout gridLayout=new GridLayout(10,1,10,10);
+        this.setLayout(gridLayout);
+        this.setSize(new Dimension(500,800));
+        this.setBackground(Color.gray);
         this.setVisible(true);
-        //
-        Person user=new Person("me");
-        PersonGUI personGUI=new PersonGUI(user);
-        this.add(personGUI);
-        //
 
     }
 
+    public  DefaultListModel<PersonGUI> getClientPersonsGUI() {
+        return clientPersonsGUI;
+    }
 
     public void addPersonGUItoList(PersonGUI p){
 
@@ -41,10 +37,6 @@ public class NetworkMainPanel2 extends JPanel {
         this.invalidate();
         this.validate();
         this.repaint();
-       /* SwingUtilities.updateComponentTreeUI(mainFrame);
-        mainFrame.invalidate();
-        mainFrame.validate();
-        mainFrame.repaint();*/
     }
 
 

@@ -28,6 +28,9 @@ public class Server extends Thread {
    }
 
 
+    public ArrayList<Socket> getClients() {
+        return clients;
+    }
 
     @Override
     public void run(){

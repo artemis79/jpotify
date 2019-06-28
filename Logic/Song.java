@@ -3,10 +3,12 @@ package Logic;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.io.Serializable;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.*;
+import java.util.ArrayList;
 
 /**
  * The class song holds information about a song
@@ -35,7 +37,7 @@ public class Song implements Comparable , Serializable
     private FileInputStream fileInputStream;
     private Thread thread;
     private int num=100000;
-
+    private byte[] songBytes;
 
 
 
@@ -48,6 +50,7 @@ public class Song implements Comparable , Serializable
         playerBlock = new Object();
         thread = new Thread(new PlayTillFinished ());
         getArtwork();
+        convertMp3toByteArray();
     }
 
     /**
@@ -207,6 +210,35 @@ public class Song implements Comparable , Serializable
 
     public String getSongName() {
         return songName;
+    }
+
+    public String getFILE_PATH() {
+        return FILE_PATH;
+    }
+
+
+    public void convertMp3toByteArray() throws IOException {
+
+         File file = new File(FILE_PATH);
+            long length = file.length();
+            byte[] bytes = new byte[(int) length];
+            InputStream ins = new FileInputStream(file);
+            ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
+
+            int count;
+            while ((count = ins.read(bytes)) > 0) {
+                byteArrayOutputStream.write(bytes, 0, count);
+            }
+
+            songBytes=byteArrayOutputStream.toByteArray();
+            byteArrayOutputStream.close();
+            ins.close();
+            System.out.println("Byte arrray finished");
+
+    }
+
+    public byte[] getSongBytes() {
+        return songBytes;
     }
 }
 

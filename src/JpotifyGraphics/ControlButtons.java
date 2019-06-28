@@ -1,7 +1,9 @@
 package JpotifyGraphics;
 
-import Logic.*;
-import javazoom.jl.player.Player;
+import Logic.Album;
+import Logic.Library;
+import Logic.Playlist;
+import Logic.Song;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -14,11 +16,17 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
+import java.io.IOException;
+
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
 
 public class ControlButtons extends JPanel {
 
@@ -27,10 +35,11 @@ public class ControlButtons extends JPanel {
     private JLabel forward;
     private JLabel shuffle;
     private JLabel repeat;
+    private JLabel showLyrics;
     private Song song;
     private Album album;
     private Playlist playlist;
-    ArrayList<Song> shuffledSongs;
+    private ArrayList<Song> shuffledSongs;
     private Library library;
     private boolean isShuffle = false;
     private boolean isRepeat = false;
@@ -38,7 +47,7 @@ public class ControlButtons extends JPanel {
     private final int PLAYING_ALBUM = 0;
     private final int PLAYING_PLAYLIST = 1;
     private final int PLAYING_LIBRARY = 2;
-    private final String PARENT_PATH = "C:\\Users\\mahsh\\IdeaProjects\\Jpotify\\src\\Images\\";
+    private final String PARENT_PATH = "src\\Images\\";
     private final String PAUSE_PATH =  PARENT_PATH + "icons8-pause-button-80.png";
     private final String RESUME_PATH = PARENT_PATH + "icons8-circled-play-80.png";
     private final String FORWARD_PATH = PARENT_PATH + "icons8-fast-forward-round-80.png";
@@ -47,11 +56,14 @@ public class ControlButtons extends JPanel {
     private final String REPEAT_PATH =  PARENT_PATH + "icons8-repeat-80.png";
     private final String EMPTY_SHUFFLE = PARENT_PATH + "icons8-shuffle-80 (2).png";
     private final String EMPTY_REPEAT = PARENT_PATH + "icons8-repeat-80 (1).png";
+    private final String LYRICS_PATH = PARENT_PATH + "icons8-music-80.png";
+    private final static String songLyricsURL = "http://www.songlyrics.com";
 
     public ControlButtons () {
         super();
         setBackground(Color.darkGray);
         setImages();
+        showLyrics.addMouseListener(new ShowLyrics());
         pauseOrResume.addMouseListener(new Pause ());
         forward.addMouseListener(new Next());
         rewind.addMouseListener(new Previous());
@@ -63,6 +75,7 @@ public class ControlButtons extends JPanel {
         this.add (pauseOrResume);
         this.add(forward );
         this.add (repeat );
+        this.add (showLyrics);
         this.setVisible(true);
 
     }
@@ -100,11 +113,28 @@ public class ControlButtons extends JPanel {
         setImageButton(EMPTY_SHUFFLE , shuffle , 30);
         repeat = new JLabel();
         setImageButton(EMPTY_REPEAT , repeat , 30);
+        showLyrics = new JLabel();
+        setImageButton(LYRICS_PATH , showLyrics , 40);
     }
 
     public void pauseResumeSong (Song song){
         this.song = song;
     }
+
+    public static List<String> getSongLyrics(String band, String songTitle) throws IOException {
+        List<String> lyrics= new ArrayList<String>();
+
+        Document doc = Jsoup.connect(songLyricsURL + "/"+band.replace(" ", "-").toLowerCase()+"/"+songTitle.replace(" ", "-").toLowerCase()+"-lyrics/").get();
+        String title = doc.title();
+        Element p = doc.select("p.songLyricsV14").get(0);
+        for (Node e: p.childNodes()) {
+            if (e instanceof TextNode) {
+                lyrics.add(((TextNode)e).getWholeText());
+            }
+        }
+        return lyrics;
+    }
+
 
     public void nextSong (Song song) throws InterruptedException, UnsupportedAudioFileException, IOException {
         if (type == PLAYING_ALBUM) {
@@ -531,6 +561,59 @@ public class ControlButtons extends JPanel {
 
         }
     }
+
+    private class ShowLyrics implements MouseListener {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (song != null){
+                try {
+                    List<String> lyrics = getSongLyrics(song.getArtist() , song.getSongName());
+                    JFrame frame = new JFrame("Lyrics");
+                    frame.setSize(new Dimension(300 , 300));
+                    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    JTextArea textArea = new JTextArea();
+                    textArea.setBackground(Color.darkGray);
+                    textArea.setForeground(Color.LIGHT_GRAY);
+                    JScrollPane scrollPane = new JScrollPane();
+                    String finalLyrics = "";
+                    for (int i = 0; i < lyrics.size(); i++){
+                        finalLyrics = finalLyrics + lyrics.get(i);
+                    }
+                    textArea.setText(finalLyrics);
+                    //scrollPane.add (textArea);
+                    scrollPane.setViewportView(textArea);
+                    frame.add(scrollPane);
+                    frame.setVisible(true);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+
+
+            }
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
+        }
+    }
+
 
 
 

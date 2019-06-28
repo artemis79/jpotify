@@ -35,7 +35,7 @@ public class SongFrame extends JPanel {
     private JLabel trackTime;
     private JButton likeSong;
     private JButton addSong;
-    private final String PARENT_PATH = "C:\\Users\\mahsh\\IdeaProjects\\Jpotify\\src\\Images\\";
+    private final String PARENT_PATH = "src\\Images\\";
     private final String PLAY_PATH = PARENT_PATH + "icons8-circled-play-80.png";
     private final String EMPTY_LIKE = PARENT_PATH + "icons8-love-80.png";
     private final String FULL_LIKE = PARENT_PATH + "icons8-love-80 (1).png";

@@ -25,7 +25,7 @@ public class CenterFrame extends JPanel {
     private final int SHOW_PLAYLIST = 2;
     private ArrayList<AlbumArtwork> artworks;
     private PlayerGUI playerGUI;
-    private final String ICON_PATH = "C:\\Users\\mahsh\\IdeaProjects\\Jpotify\\src\\Images\\icons8-spotify-filled-100.png";
+    private final String ICON_PATH = "src\\Images\\icons8-spotify-filled-100.png";
     private int type ;
 
 

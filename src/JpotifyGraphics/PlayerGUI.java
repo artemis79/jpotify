@@ -4,6 +4,7 @@ import Logic.Album;
 import Logic.Playlist;
 import Logic.Song;
 import Logic.Time;
+import javazoom.jl.decoder.Equalizer;
 import javazoom.jl.decoder.JavaLayerException;
 
 import javax.imageio.ImageIO;

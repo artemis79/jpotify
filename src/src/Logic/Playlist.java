@@ -1,7 +1,8 @@
 package Logic;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Playlist implements Sort {
+public class Playlist implements Sort , Serializable {
 
     private String playlistName;
     private ArrayList<Song> playlistSongs;

@@ -6,6 +6,7 @@ import javazoom.jl.player.Player;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.Serializable;
 
 /**
  * The class song holds information about a song
@@ -16,7 +17,7 @@ import java.io.RandomAccessFile;
  * @since 2019-06-06
  */
 
-public class Song implements Comparable
+public class Song implements Comparable , Serializable
 {
     private String songName;
     private String albumName;
@@ -204,8 +205,13 @@ public class Song implements Comparable
         this.num = num;
     }
 
+    public String getSongName() {
+        return songName;
+    }
 
-
+    public String getFILE_PATH() {
+        return FILE_PATH;
+    }
 }
 
 

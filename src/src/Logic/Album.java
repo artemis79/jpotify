@@ -1,7 +1,8 @@
 package Logic;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Album implements Sort {
+public class Album implements Sort , Serializable {
 
     private String albumName;
     private String artist;

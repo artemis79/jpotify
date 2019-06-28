@@ -12,10 +12,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class Library implements Sort {
+public class Library implements Serializable , Sort  {
 
     private String libraryName;
     private String userName;
+    //private Person person;
     private ArrayList<Song> allSongs;
     private ArrayList<String> allSongsPath;
     private ArrayList<Album> allAlbums;
@@ -107,4 +108,30 @@ public class Library implements Sort {
         allSongs.sort(songComparator);
 
     }
+
+    public void save() throws IOException {
+
+        FileOutputStream f1=new FileOutputStream("SavedLibrary");
+        ObjectOutputStream out=new ObjectOutputStream(f1);
+        out.writeObject(this);
+
+        //finialize//
+    }
+
+
+    @Override
+    protected void finalize() throws IOException {
+
+        save();
+
+    }
+
+    public void read() throws IOException, ClassNotFoundException {
+        ///jaye in momkene taghir kone..//
+
+        FileInputStream f1=new FileInputStream("SavedLibrary");
+        ObjectInputStream in=new ObjectInputStream(f1);
+        in.readObject();
+    }
+
 }

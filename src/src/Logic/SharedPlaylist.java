@@ -1,7 +1,11 @@
 package Logic;
-public class SharedPlaylist extends Playlist {
+
+import java.io.Serializable;
+
+public class SharedPlaylist extends Playlist implements Serializable {
 
     public SharedPlaylist(String playlistName) {
+
         super(playlistName);
     }
 }
